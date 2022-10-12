@@ -4,6 +4,11 @@ export interface AuthResponse {
     token?: string | undefined
 }
 
+export interface AuthRequest {
+    appId: string,
+    appSecret: string
+}
+
 export interface ErrorReportInterface {
     message: string,
     name: string,

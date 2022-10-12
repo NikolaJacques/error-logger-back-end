@@ -1,4 +1,4 @@
-import {ErrorReportInterface, AuthResponse} from '../../sharedTypes/shared';
+import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../sharedTypes/shared';
 
 export const ErrorLogger = (() => {
 
@@ -62,7 +62,7 @@ export const ErrorLogger = (() => {
                     body: JSON.stringify({
                         appId,
                         appSecret
-                    })
+                    } as AuthRequest)
                 })
                 const parsedData: AuthResponse = await data.json();
                 if (parsedData.authenticated!==false){
