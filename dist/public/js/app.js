@@ -100,7 +100,8 @@ exports.ErrorLogger = (() => {
                 }
             }
             catch (error) {
-                throw new Error('Error logging error in error DB');
+                console.log(error);
+                window.alert('Error logging error in error DB');
             }
         }
     };
