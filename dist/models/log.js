@@ -30,5 +30,5 @@ const logSchema = new mongoose_1.Schema({
         type: String
     }
 });
-const Logs = (0, mongoose_1.model)('Log', logSchema);
-exports.default = Logs;
+const Log = (0, mongoose_1.model)('Log', logSchema);
+exports.default = Log;
