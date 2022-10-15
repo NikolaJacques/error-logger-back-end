@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ErrorReportInterface } from '../utils/shared';
+import { ErrorReportInterface } from '../utils/sharedTypes';
 
 interface ErrorLogInterface extends ErrorReportInterface {
     appId: string,

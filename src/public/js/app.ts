@@ -1,4 +1,4 @@
-import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../utils/shared';
+import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../utils/sharedTypes';
 import * as dotenv from 'dotenv';
 dotenv.config();
 

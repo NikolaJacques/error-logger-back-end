@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { AuthResponse, AuthRequest } from '../utils/shared';
+import { AuthResponse, AuthRequest } from '../utils/sharedTypes';
 import * as bcrypt from 'bcryptjs';
 import Projects from '../models/project';
 import { uuid } from 'uuidv4';
@@ -15,7 +15,7 @@ export const authenticate:RequestHandler<any, AuthResponse, AuthRequest> = async
                 authenticated: false
             });
         } else {
-            const credentialsOk = await bcrypt.compare(req.body.appSecret,project.secret);
+            const credentialsOk = await bcrypt.compare(req.body.appSecret, project.secret);
             if (!credentialsOk){
                 res.status(403).json({
                     message: 'Authentication unsuccessful; wrong credentials.',
