@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ErrorReportInterface } from '../sharedTypes/shared';
+import { ErrorReportInterface } from '../utils/shared';
 
 interface ErrorLogInterface extends ErrorReportInterface {
     appId: string,
@@ -36,6 +36,6 @@ const logSchema = new Schema<ErrorLogInterface>({
     }
 });
 
-const Log = model<ErrorLogInterface>('Log', logSchema);
+const Logs = model<ErrorLogInterface>('Log', logSchema);
 
-export default Log;
+export default Logs;

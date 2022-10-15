@@ -1,4 +1,4 @@
-import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../sharedTypes/shared';
+import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../utils/shared';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -55,9 +55,12 @@ export const ErrorLogger = (() => {
     }
   }
 
+  let timestampOptions: TimestampOptions = {locale: 'fr-BE', timeZone: 'Europe/Brussels'};
+
     return {
-        init: async (appId:string, appSecret: string):Promise<void> => {
+        init: async (appId:string, appSecret: string, timestampOpts: TimestampOptions):Promise<void> => {
             try {
+                timestampOptions = timestampOpts;
                 if (authURL){
                     const data = await fetch(authURL, {
                         method: 'POST',
@@ -82,7 +85,7 @@ export const ErrorLogger = (() => {
                 window.alert('ErrorLogger authentication failed: check console or contact administrator.');
             }
         },
-        send: async (error: Error, timestampOptions: TimestampOptions = {locale: 'fr-BE', timeZone: 'Europe/Brussels'} ):Promise<void> => {
+        send: async (error: Error):Promise<void> => {
             try {
                 const browser = getBrowser();
                 const ts:string = timestamp(timestampOptions);

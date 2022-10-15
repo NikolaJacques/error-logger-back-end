@@ -1,1 +1,12 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.archiveLogs = exports.deleteLogs = exports.postLog = exports.getLogs = void 0;
+// import Logs from '../models/log';
+const getLogs = (_, _2, _3) => { };
+exports.getLogs = getLogs;
+const postLog = (_, _2, _3) => { };
+exports.postLog = postLog;
+const deleteLogs = (_, _2, _3) => { };
+exports.deleteLogs = deleteLogs;
+const archiveLogs = (_, _2, _3) => { };
+exports.archiveLogs = archiveLogs;

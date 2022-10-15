@@ -25,9 +25,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const authController = __importStar(require("../controllers/auth"));
-// import * as logController from '../controllers/log';
 const router = (0, express_1.Router)();
-router.post('/auth', authController.authenticate);
-router.post('/');
+// will require auth as admin
+// will use query parameters to narrow request
+// will use pagination
+router.post('/auth', authController.login);
 router.get('/');
-exports.default = router;

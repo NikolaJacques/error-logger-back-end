@@ -1,21 +1,13 @@
-import { Schema, model } from 'mongoose';
-
-interface ProjectInterface {
-    name: string,
-    secret: string,
-    description: string,
-    email: string,
-    createdAt: Date,
-    active: boolean
-}
-
-const projectSchema = new Schema<ProjectInterface>({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = require("mongoose");
+const projectSchema = new mongoose_1.Schema({
     name: {
-        type:String,
+        type: String,
         required: true
     },
     secret: {
-        type:String,
+        type: String,
         required: true
     },
     description: {
@@ -36,8 +28,6 @@ const projectSchema = new Schema<ProjectInterface>({
         required: true,
         default: true
     }
-})
-
-const Projects = model<ProjectInterface>('Project', projectSchema);
-
-export default Projects;
+});
+const Projects = (0, mongoose_1.model)('Project', projectSchema);
+exports.default = Projects;

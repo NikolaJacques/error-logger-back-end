@@ -23,11 +23,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const authController = __importStar(require("../controllers/auth"));
-// import * as logController from '../controllers/log';
-const router = (0, express_1.Router)();
-router.post('/auth', authController.authenticate);
-router.post('/');
-router.get('/');
-exports.default = router;
+exports.LOGS_URI = exports.AUTH_URI = exports.JWT_SECRET = exports.MONGO_URI = void 0;
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+exports.MONGO_URI = process.env.MONGO_URI;
+exports.JWT_SECRET = process.env.JWT_SECRET;
+exports.AUTH_URI = process.env.AUTH_URI;
+exports.LOGS_URI = process.env.LOGS_URI;
