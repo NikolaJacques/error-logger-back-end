@@ -29,5 +29,5 @@ const projectSchema = new mongoose_1.Schema({
         default: true
     }
 });
-const Projects = (0, mongoose_1.model)('Project', projectSchema);
-exports.default = Projects;
+const Project = (0, mongoose_1.model)('Project', projectSchema);
+exports.default = Project;

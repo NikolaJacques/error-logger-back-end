@@ -36,7 +36,7 @@ const authenticate = async (req, res, next) => {
     try {
         const project = await project_1.default.findById(req.body.appId).exec();
         if (!project) {
-            res.status(404).json({
+            return res.status(404).json({
                 message: 'Project query unsuccessful; appId returned no results.',
                 authenticated: false
             });
@@ -44,7 +44,7 @@ const authenticate = async (req, res, next) => {
         else {
             const credentialsOk = await bcrypt.compare(req.body.appSecret, project.secret);
             if (!credentialsOk) {
-                res.status(403).json({
+                return res.status(403).json({
                     message: 'Authentication unsuccessful; wrong credentials.',
                     authenticated: false
                 });

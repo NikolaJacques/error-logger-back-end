@@ -1,11 +1,14 @@
 import { RequestHandler } from 'express';
 import Log from '../models/log';
+import { ErrorReportInterface } from '../utils/sharedTypes';
 
-export const getLogs: RequestHandler = async (req, res, next) => {
+export const getLogs: RequestHandler = async (_, res, next) => {
     try{
+        // add query parameter handling
+        // add pagination
         const logs = await Log.find({});
         if(logs.length===0){
-            res.status(404).json({
+            return res.status(404).json({
                 message: 'No logs found.'
             });
         }
@@ -19,9 +22,22 @@ export const getLogs: RequestHandler = async (req, res, next) => {
     }
 };
 
-export const postLog: RequestHandler = (_, _2, _3) => {
-
+export const postLog: RequestHandler = async (req, res, next) => {
+    interface ErrorLog extends ErrorReportInterface {
+        sessionId: string,
+        appId: string
+    }
+    try {
+        const logObj:ErrorLog = req.body;
+        const log = new Log(logObj);
+        await log.save();
+        res.status(200).json({
+            message: 'Log successfully saved.'
+        });
+    }
+    catch(err){
+        next(err);
+    }
 };
 
 export const deleteLogs: RequestHandler = (_, _2, _3) => {};
-export const archiveLogs: RequestHandler = (_, _2, _3) => {};

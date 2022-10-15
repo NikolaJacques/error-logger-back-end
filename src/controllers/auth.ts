@@ -10,14 +10,14 @@ export const authenticate:RequestHandler<any, AuthResponse, AuthRequest> = async
     try {
         const project = await Projects.findById(req.body.appId).exec();
         if (!project){
-            res.status(404).json({
+            return res.status(404).json({
                 message: 'Project query unsuccessful; appId returned no results.',
                 authenticated: false
             });
         } else {
             const credentialsOk = await bcrypt.compare(req.body.appSecret, project.secret);
             if (!credentialsOk){
-                res.status(403).json({
+                return res.status(403).json({
                     message: 'Authentication unsuccessful; wrong credentials.',
                     authenticated: false
                 });

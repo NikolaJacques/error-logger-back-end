@@ -31,12 +31,12 @@ const auth = (req, res, next) => {
         const token = req.get('Authorization').split(' ')[1];
         const decodedToken = jwt.verify(token, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
         if (!decodedToken) {
-            res.status(401).json({
+            return res.status(401).json({
                 message: 'Could not authenticate; request failed.'
             });
         }
-        req.appId = decodedToken.appId;
-        req.sessionId = decodedToken.sessionId;
+        req.body.appId = decodedToken.appId;
+        req.body.sessionId = decodedToken.sessionId;
         next();
     }
     catch (err) {
