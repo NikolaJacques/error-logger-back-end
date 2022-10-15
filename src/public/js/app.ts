@@ -1,4 +1,6 @@
 import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../sharedTypes/shared';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export const ErrorLogger = (() => {
 
@@ -17,8 +19,8 @@ export const ErrorLogger = (() => {
         timeZone: string
     }
 
-    const authURL:string = 'http://localhost:3000/auth';
-    const logURL:string = 'http://localhost:3000/logs';
+    const authURL:string|undefined = process.env.AUTH_URI;
+    const logsURL:string|undefined = process.env.LOGS_URI;
 
     // user agent sniffing (from https://www.seanmcp.com/articles/how-to-get-the-browser-version-in-javascript/)
     const getBrowser = () => {
@@ -56,21 +58,24 @@ export const ErrorLogger = (() => {
     return {
         init: async (appId:string, appSecret: string):Promise<void> => {
             try {
-                const data = await fetch(authURL, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        appId,
-                        appSecret
-                    } as AuthRequest)
-                })
-                const parsedData: AuthResponse = await data.json();
-                if (parsedData.authenticated!==false){
-                    sessionStorage.setItem('error-log-token', parsedData.token!);
+                if (authURL){
+                    const data = await fetch(authURL, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            appId,
+                            appSecret
+                        } as AuthRequest)
+                    })
+                    const parsedData: AuthResponse = await data.json();
+                    if (parsedData.authenticated!==false){
+                        sessionStorage.setItem('error-log-token', parsedData.token!);
+                    } else {
+                        throw new Error(parsedData.message);
+                    }
                 } else {
-                    throw new Error(parsedData.message);
+                    throw new Error('Auth URL not defined');
                 }
-                
             }
             catch(error){
                 console.log(error);
@@ -82,16 +87,20 @@ export const ErrorLogger = (() => {
                 const browser = getBrowser();
                 const ts:string = timestamp(timestampOptions);
                 const errorRep = new ErrorReport(error.message, error.name, error.stack!, browser!, ts);
-                const data = await fetch(logURL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + sessionStorage.getItem('error-log-token'),
-                    },
-                    body: JSON.stringify(errorRep)
-                })
-                const parsedData = await data.json();
-                console.log(parsedData.message);
+                if(logsURL){
+                    const data = await fetch(logsURL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + sessionStorage.getItem('error-log-token'),
+                        },
+                        body: JSON.stringify(errorRep)
+                    })
+                    const parsedData = await data.json();
+                    console.log(parsedData.message);
+                } else {
+                    throw new Error('Logs URL not defined');
+                }
             }
             catch(error){
                 throw new Error('Error logging error in error DB');
