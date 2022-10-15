@@ -36,6 +36,12 @@ const project_1 = __importDefault(require("./models/project"));
 const env_1 = require("./utils/env");
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
+app.use((_, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 app.use('/', express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use('/logs', log_1.default);
 app.use((err, _, res, _2) => {
