@@ -1,6 +1,5 @@
 import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../utils/sharedTypes';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { AUTH_URI, LOGS_URI } from '../../utils/env';
 
 export const ErrorLogger = (() => {
 
@@ -18,9 +17,6 @@ export const ErrorLogger = (() => {
         locale: string,
         timeZone: string
     }
-
-    const authURL:string|undefined = process.env.AUTH_URI;
-    const logsURL:string|undefined = process.env.LOGS_URI;
 
     // user agent sniffing (from https://www.seanmcp.com/articles/how-to-get-the-browser-version-in-javascript/)
     const getBrowser = () => {
@@ -61,8 +57,8 @@ export const ErrorLogger = (() => {
         init: async (appId:string, appSecret: string, timestampOpts: TimestampOptions):Promise<void> => {
             try {
                 timestampOptions = timestampOpts;
-                if (authURL){
-                    const data = await fetch(authURL, {
+                if (AUTH_URI){
+                    const data = await fetch(AUTH_URI, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
@@ -90,8 +86,8 @@ export const ErrorLogger = (() => {
                 const browser = getBrowser();
                 const ts:string = timestamp(timestampOptions);
                 const errorRep = new ErrorReport(error.message, error.name, error.stack!, browser!, ts);
-                if(logsURL){
-                    const data = await fetch(logsURL, {
+                if(LOGS_URI){
+                    const data = await fetch(LOGS_URI, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
