@@ -23,11 +23,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LOGS_URI = exports.AUTH_URI = exports.JWT_ADMIN_SECRET = exports.JWT_SECRET = exports.MONGO_URI = void 0;
-const dotenv = __importStar(require("dotenv"));
-dotenv.config();
-exports.MONGO_URI = process.env.MONGO_URI;
-exports.JWT_SECRET = process.env.JWT_SECRET;
-exports.JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
-exports.AUTH_URI = process.env.AUTH_URI;
-exports.LOGS_URI = process.env.LOGS_URI;
+exports.auth = void 0;
+const jwt = __importStar(require("jsonwebtoken"));
+const env_1 = require("../utils/env");
+const auth = (req, res, next) => {
+    try {
+        const token = req.get('Authorization').split(' ')[1];
+        const decodedToken = jwt.verify(token, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
+        if (!decodedToken) {
+            res.status(401).json({
+                message: 'Could not authenticate; request failed.'
+            });
+        }
+        req.appId = decodedToken.appId;
+        req.sessionId = decodedToken.sessionId;
+        next();
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.auth = auth;
