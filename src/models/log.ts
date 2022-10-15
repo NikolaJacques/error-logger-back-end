@@ -36,6 +36,6 @@ const logSchema = new Schema<ErrorLogInterface>({
     }
 });
 
-const Logs = model<ErrorLogInterface>('Log', logSchema);
+const Log = model<ErrorLogInterface>('Log', logSchema);
 
-export default Logs;
+export default Log;

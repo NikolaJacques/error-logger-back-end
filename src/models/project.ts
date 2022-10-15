@@ -38,6 +38,6 @@ const projectSchema = new Schema<ProjectInterface>({
     }
 })
 
-const Projects = model<ProjectInterface>('Project', projectSchema);
+const Project = model<ProjectInterface>('Project', projectSchema);
 
-export default Projects;
+export default Project;
