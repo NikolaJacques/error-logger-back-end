@@ -3,6 +3,7 @@ import { ErrorReportInterface } from '../utils/sharedTypes';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/env';
+import { appendFile } from 'fs';
 
 interface RequestBodyInterface extends ErrorReportInterface {
     appId: string,
@@ -18,8 +19,9 @@ export const auth:RequestHandler = (req:Request<any, any, RequestBodyInterface>,
                 message: 'Could not authenticate; request failed.'
             });
         }
-        req.body.appId = (decodedToken as JwtPayload).appId;
-        req.body.sessionId = (decodedToken as JwtPayload).sessionId;
+        const { appId, sessionId } = (decodedToken as JwtPayload); 
+        req.body.appId = appId;
+        req.body.sessionId = sessionId;
         next();
     }
     catch(err){
