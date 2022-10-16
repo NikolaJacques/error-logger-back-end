@@ -1,10 +1,10 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, ObjectId } from 'mongoose';
 
 interface ProjectInterface {
     name: string,
     secret: string,
     description: string,
-    email: string,
+    user: ObjectId,
     createdAt: Date,
     active: boolean
 }
@@ -22,9 +22,9 @@ const projectSchema = new Schema<ProjectInterface>({
         type: String,
         required: false
     },
-    email: {
-        type: String,
-        required: true
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
     createdAt: {
         type: Date,
