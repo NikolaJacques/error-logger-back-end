@@ -3,7 +3,6 @@ import { ErrorReportInterface } from '../utils/sharedTypes';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/env';
-import { appendFile } from 'fs';
 
 interface RequestBodyInterface extends ErrorReportInterface {
     appId: string,
