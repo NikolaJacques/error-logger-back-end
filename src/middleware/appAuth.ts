@@ -1,4 +1,4 @@
-import {RequestHandler, Request} from 'express';
+import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { ErrorReportInterface } from '../utils/sharedTypes';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
@@ -9,7 +9,13 @@ interface RequestBodyInterface extends ErrorReportInterface {
     sessionId: string
 }
 
-export const auth:RequestHandler = (req:Request<any, any, RequestBodyInterface>, res, next) => {
+interface ResponseBodyInterface {
+    message: string
+}
+
+export type AuthFunctionType = RequestHandler<unknown, ResponseBodyInterface, RequestBodyInterface>;
+
+export const auth:AuthFunctionType = (req, res, next) => {
     try {
         const token = req.get('Authorization')!.split(' ')[1];
         const decodedToken = jwt.verify(token, JWT_SECRET ?? '');
@@ -19,8 +25,8 @@ export const auth:RequestHandler = (req:Request<any, any, RequestBodyInterface>,
             });
         }
         const { appId, sessionId } = (decodedToken as JwtPayload); 
-        req.body.appId = appId;
-        req.body.sessionId = sessionId;
+        (req as any).appId = appId;
+        (req as any).sessionId = sessionId;
         next();
     }
     catch(err){
