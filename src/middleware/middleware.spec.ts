@@ -39,16 +39,18 @@ describe('App Auth Middleware', () => {
         };
         const res:any = {};
         const next:any = () => {};
-        (jwt as jest.Mocked<typeof import('jsonwebtoken')>).verify.mockImplementation(() => {
+        const mockedVerify = (jwt as jest.Mocked<typeof import('jsonwebtoken')>).verify; 
+        mockedVerify.mockImplementation(() => {
             return {
                 appId: '1234',
                 sessionId: '4567'
             }
         });
         auth(req, res, next);
-        expect(jwt.verify).toHaveBeenCalled();
+        expect(mockedVerify).toHaveBeenCalled();
         expect(req).toHaveProperty('appId');
         expect(req).toHaveProperty('appId', '1234');
+        mockedVerify.mockRestore();
     });
 
 })
