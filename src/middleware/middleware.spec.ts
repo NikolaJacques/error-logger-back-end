@@ -28,17 +28,17 @@ describe('App Auth Middleware', () => {
     });
     
     test("should return a request object containing appId and sessionId", () => {
-        const headers:any = {
-            Authorization: 'Bearer xyz'
-        }
         const req:any = {
-            get: (value:string) => {
-                return headers[value];
+            get: () => {
+                return 'Bearer xyz';
             },
-            headers
+            body: {}
         };
         const res:any = {};
-        const next:any = () => {};
+        const next:any = () => {
+            expect(req.body).toHaveProperty('appId');
+            expect(req.body).toHaveProperty('appId', '1234');
+        };
         const mockedVerify = (jwt as jest.Mocked<typeof import('jsonwebtoken')>).verify; 
         mockedVerify.mockImplementation(() => {
             return {
@@ -48,8 +48,6 @@ describe('App Auth Middleware', () => {
         });
         auth(req, res, next);
         expect(mockedVerify).toHaveBeenCalled();
-        expect(req).toHaveProperty('appId');
-        expect(req).toHaveProperty('appId', '1234');
         mockedVerify.mockRestore();
     });
 

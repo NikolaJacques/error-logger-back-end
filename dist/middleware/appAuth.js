@@ -36,8 +36,8 @@ const auth = (req, res, next) => {
             });
         }
         const { appId, sessionId } = decodedToken;
-        req.appId = appId;
-        req.sessionId = sessionId;
+        req.body.appId = appId;
+        req.body.sessionId = sessionId;
         next();
     }
     catch (err) {

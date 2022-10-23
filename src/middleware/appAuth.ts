@@ -25,8 +25,8 @@ export const auth:AuthFunctionType = (req, res, next) => {
             });
         }
         const { appId, sessionId } = (decodedToken as JwtPayload); 
-        (req as any).appId = appId;
-        (req as any).sessionId = sessionId;
+        (req.body as RequestBodyInterface).appId = appId;
+        (req.body as RequestBodyInterface).sessionId = sessionId;
         next();
     }
     catch(err){
