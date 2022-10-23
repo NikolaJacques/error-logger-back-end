@@ -35,8 +35,9 @@ const auth = (req, res, next) => {
                 message: 'Could not authenticate; request failed.'
             });
         }
-        req.body.appId = decodedToken.appId;
-        req.body.sessionId = decodedToken.sessionId;
+        const { appId, sessionId } = decodedToken;
+        req.appId = appId;
+        req.sessionId = sessionId;
         next();
     }
     catch (err) {
