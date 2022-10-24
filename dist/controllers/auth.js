@@ -34,7 +34,7 @@ const jwt = __importStar(require("jsonwebtoken"));
 const env_1 = require("../utils/env");
 const authenticate = async (req, res, next) => {
     try {
-        const project = await project_1.default.findById(req.body.appId).exec();
+        const project = await project_1.default.findById(req.body.appId);
         if (!project) {
             const err = new Error();
             err.message = 'Project query unsuccessful; appId returned no results.';

@@ -8,7 +8,7 @@ import { JWT_SECRET } from '../utils/env';
 
 export const authenticate:RequestHandler<any, AuthResponse, AuthRequest> = async (req, res, next) => {
     try {
-        const project = await Projects.findById(req.body.appId).exec();
+        const project = await Projects.findById(req.body.appId);
         if (!project){
             const err = new Error() as ErrorResponseType;
             err.message = 'Project query unsuccessful; appId returned no results.'; 
@@ -29,7 +29,6 @@ export const authenticate:RequestHandler<any, AuthResponse, AuthRequest> = async
         }, JWT_SECRET ?? '');
         res.status(200).json({
             message: 'Authentication successful.',
-            authenticated: true,
             token
         });
     }
