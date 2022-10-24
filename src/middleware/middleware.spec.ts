@@ -13,17 +13,29 @@ describe('App Auth Middleware', () => {
     });
     
     test('should throw an error if no token in Authorization header', () => {
-        const headers:any = {
-            Authorization: 'Bearer'
-        }
         const req:any = {
-            get: (value:string) => {
-                return headers[value];
+            get: () => {
+                return 'Bearer';
             },
-            headers
+            body: {}
         };
         const res:any = {};
         const next:any = (error:Error) => {expect(error).not.toBeFalsy()};
+        auth(req, res, next);
+    });
+
+    test("should throw an error if invalid token", () => {
+        const req:any = {
+            get: () => {
+                return 'Bearer xyz';
+            },
+            body: {}
+        };
+        const res:any = {};
+        const next:any = (error:Error) => {
+            expect(error).not.toBeFalsy();
+            expect(error.message).toBe('Could not authenticate; request failed.')
+        };
         auth(req, res, next);
     });
     
