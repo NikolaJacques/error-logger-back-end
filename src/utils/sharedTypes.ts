@@ -7,7 +7,7 @@ export interface AuthResponse {
 export interface AuthRequest {
     appId: string,
     appSecret: string
-}
+};
 
 export interface ErrorReportInterface {
     message: string,
@@ -15,4 +15,6 @@ export interface ErrorReportInterface {
     stackTrace: string,
     browserVersion: string,
     timestamp: string|undefined
-}
+};
+
+export type ErrorResponseType = Error & {statusCode: number};

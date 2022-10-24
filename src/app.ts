@@ -21,8 +21,10 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.use('/logs', logRoutes);
 
-app.use((err: Error, _: Request, res: Response, _2: NextFunction) => {
-    res.status(500).json({ message: err.message });
+app.use((err: Error & {message: string, statusCode: number}, _: Request, res: Response, _2: NextFunction) => {
+    const message = err.message ? err.message : 'Unknown Server error';
+    const statusCode = err.statusCode ? err.statusCode : 500;
+    res.status(statusCode).json({ message });
 });
 
 mongoose.connect(MONGO_URI ?? '')

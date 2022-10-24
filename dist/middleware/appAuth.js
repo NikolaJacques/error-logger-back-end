@@ -31,9 +31,10 @@ const auth = (req, res, next) => {
         const token = req.get('Authorization').split(' ')[1];
         const decodedToken = jwt.verify(token, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
         if (!decodedToken) {
-            return res.status(401).json({
-                message: 'Could not authenticate; request failed.'
-            });
+            const err = new Error();
+            err.message = 'Could not authenticate; request failed.';
+            err.statusCode = 401;
+            throw err;
         }
         const { appId, sessionId } = decodedToken;
         req.body.appId = appId;

@@ -36,35 +36,28 @@ const authenticate = async (req, res, next) => {
     try {
         const project = await project_1.default.findById(req.body.appId).exec();
         if (!project) {
-            return res.status(404).json({
-                message: 'Project query unsuccessful; appId returned no results.',
-                authenticated: false
-            });
+            const err = new Error();
+            err.message = 'Project query unsuccessful; appId returned no results.';
+            err.statusCode = 404;
+            throw err;
         }
-        else {
-            const credentialsOk = await bcrypt.compare(req.body.appSecret, project.secret);
-            if (!credentialsOk) {
-                return res.status(403).json({
-                    message: 'Authentication unsuccessful; wrong credentials.',
-                    authenticated: false
-                });
-            }
-            else {
-                const sessionId = (0, uuidv4_1.uuid)();
-                if (!env_1.JWT_SECRET) {
-                    throw new Error('JWT secret undefined, could not generate token.');
-                }
-                const token = jwt.sign({
-                    appId: req.body.appId,
-                    sessionId
-                }, env_1.JWT_SECRET);
-                res.status(200).json({
-                    message: 'Authentication successful.',
-                    authenticated: true,
-                    token
-                });
-            }
+        const credentialsOk = await bcrypt.compare(req.body.appSecret, project.secret);
+        if (!credentialsOk) {
+            const err = new Error();
+            err.message = 'Authentication unsuccessful; wrong credentials.';
+            err.statusCode = 403;
+            throw err;
         }
+        const sessionId = (0, uuidv4_1.uuid)();
+        const token = jwt.sign({
+            appId: req.body.appId,
+            sessionId
+        }, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
+        res.status(200).json({
+            message: 'Authentication successful.',
+            authenticated: true,
+            token
+        });
     }
     catch (err) {
         next(err);

@@ -45,7 +45,9 @@ app.use((_, res, next) => {
 app.use('/', express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use('/logs', log_1.default);
 app.use((err, _, res, _2) => {
-    res.status(500).json({ message: err.message });
+    const message = err.message ? err.message : 'Unknown Server error';
+    const statusCode = err.statusCode ? err.statusCode : 500;
+    res.status(statusCode).json({ message });
 });
 mongoose.connect(env_1.MONGO_URI !== null && env_1.MONGO_URI !== void 0 ? env_1.MONGO_URI : '')
     .then(() => console.log('DB Connection successful'))
