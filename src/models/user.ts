@@ -18,7 +18,8 @@ const userSchema = new Schema<UserInterface>({
     },
     projects: [{
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        default: []
     }],
     permissions: [{
         type: String,

@@ -12,7 +12,8 @@ const userSchema = new mongoose_1.Schema({
     },
     projects: [{
             type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'Project'
+            ref: 'Project',
+            default: []
         }],
     permissions: [{
             type: String,

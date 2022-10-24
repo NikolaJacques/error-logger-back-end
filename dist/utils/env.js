@@ -23,10 +23,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LOGS_URI = exports.AUTH_URI = exports.JWT_ADMIN_SECRET = exports.JWT_SECRET = exports.MONGO_URI = void 0;
+exports.LOGS_URI = exports.AUTH_URI = exports.JWT_ADMIN_SECRET = exports.JWT_SECRET = exports.MONGO_TEST_URI = exports.MONGO_URI = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 exports.MONGO_URI = process.env.MONGO_URI;
+exports.MONGO_TEST_URI = process.env.MONGO_TEST_URI;
 exports.JWT_SECRET = process.env.JWT_SECRET;
 exports.JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
 exports.AUTH_URI = process.env.AUTH_URI;
