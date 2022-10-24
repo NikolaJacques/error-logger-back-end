@@ -89,7 +89,7 @@ describe("Auth controller - authenticate", () => {
             }
         };
         const next: any = () => {expect(responseObject).toHaveProperty('token')};
-        authenticate(req as any, res as any, next);
+        authenticate(req, res, next);
     });
 
     afterAll(async () => {
