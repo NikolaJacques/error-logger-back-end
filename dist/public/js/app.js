@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorLogger = void 0;
 const env_1 = require("../../utils/env");
-exports.ErrorLogger = (() => {
+const ErrorLogger = (() => {
     class ErrorReport {
         constructor(message, name, stackTrace, browserVersion, timestamp) {
             this.message = message;
@@ -51,7 +50,10 @@ exports.ErrorLogger = (() => {
     return {
         init: async (appId, appSecret, timestampOpts) => {
             try {
-                timestampOptions = timestampOpts;
+                if (timestampOpts) {
+                    timestampOptions = Object.assign(Object.assign({}, timestampOpts), timestampOptions);
+                }
+                ;
                 if (env_1.AUTH_URI) {
                     const data = await fetch(env_1.AUTH_URI, {
                         method: 'POST',

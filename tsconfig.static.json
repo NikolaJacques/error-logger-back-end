@@ -1,0 +1,5 @@
+{
+    "extends": "./tsconfig.json",
+    "rootDir": "./src/public",
+    "outDir": "./dist/public"
+}
