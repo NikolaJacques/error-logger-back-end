@@ -23,16 +23,16 @@ export const getLogs: RequestHandler = async (_, res, next) => {
 };
 
 export const postLog: RequestHandler = async (req, res, next) => {
-    interface ErrorLog extends ErrorReportInterface {
-        sessionId: string,
-        appId: string
-    }
     try {
-        const logObj:ErrorLog = req.body;
+        const logObj: ErrorReportInterface & {
+            sessionId: string,
+            appId: string
+        } = req.body;
         const log = new Log(logObj);
         await log.save();
         res.status(200).json({
-            message: 'Log successfully saved.'
+            message: 'Log successfully saved.',
+            log
         });
     }
     catch(err){

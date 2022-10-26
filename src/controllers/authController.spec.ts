@@ -1,15 +1,15 @@
 import {authenticate} from './auth';
+import { ErrorResponseType } from '../utils/sharedTypes';
 import { MONGO_TEST_URI } from '../utils/env';
-import mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 import Project from '../models/project';
 import User from '../models/user';
-import { ErrorResponseType } from '../utils/sharedTypes';
 
 describe("Auth controller - authenticate", () => {
 
-    let testProject: any;
-    const SECRET = 'somesupersecret';
+    let testProject:any;
+    const SECRET = 'testSecret';
 
     beforeAll(async () => {
         try{
@@ -33,7 +33,18 @@ describe("Auth controller - authenticate", () => {
         catch(err){
             console.log(err);
         }
-    })
+    });
+
+    afterAll(async () => {
+        try {
+            await User.deleteMany({});
+            await Project.deleteMany({});
+            await mongoose.disconnect();
+        }
+        catch(err){
+            console.log(err);
+        }
+    });
 
     test("db returns test project", async () => {
         const project = await Project.findById(testProject._id);
@@ -88,19 +99,11 @@ describe("Auth controller - authenticate", () => {
                 }
             }
         };
-        const next: any = () => {expect(responseObject).toHaveProperty('token')};
+        const next: any = () => {
+            expect(responseObject).toHaveProperty('token');
+            expect((responseObject as any).token).not.toBeFalsy();
+        };
         authenticate(req, res, next);
     });
-
-    afterAll(async () => {
-        try {
-            await User.deleteMany({});
-            await Project.deleteMany({});
-            await mongoose.disconnect();
-        }
-        catch(err){
-            console.log(err);
-        }
-    })
 
 })

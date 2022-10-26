@@ -67,7 +67,7 @@ export const ErrorLogger = (() => {
                         } as AuthRequest)
                     })
                     const parsedData: AuthResponse = await data.json();
-                    if (parsedData.authenticated!==false){
+                    if (data.ok){
                         sessionStorage.setItem('error-log-token', parsedData.token!);
                     } else {
                         throw new Error(parsedData.message);

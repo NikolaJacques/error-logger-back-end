@@ -62,7 +62,7 @@ exports.ErrorLogger = (() => {
                         })
                     });
                     const parsedData = await data.json();
-                    if (parsedData.authenticated !== false) {
+                    if (data.ok) {
                         sessionStorage.setItem('error-log-token', parsedData.token);
                     }
                     else {

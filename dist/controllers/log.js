@@ -31,7 +31,8 @@ const postLog = async (req, res, next) => {
         const log = new log_1.default(logObj);
         await log.save();
         res.status(200).json({
-            message: 'Log successfully saved.'
+            message: 'Log successfully saved.',
+            log
         });
     }
     catch (err) {
