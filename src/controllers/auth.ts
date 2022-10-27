@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { AuthResponse, AuthRequest, ErrorResponseType } from '../utils/sharedTypes';
 import * as bcrypt from 'bcryptjs';
 import Projects from '../models/project';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/env';
 

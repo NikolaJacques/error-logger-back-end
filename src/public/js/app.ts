@@ -1,5 +1,4 @@
 import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../utils/sharedTypes';
-import { AUTH_URI, LOGS_URI } from '../../utils/env';
 
 export const ErrorLogger = (() => {
 
@@ -17,6 +16,9 @@ export const ErrorLogger = (() => {
         locale: string,
         timeZone: string
     }
+
+    const AUTH_URI='http://localhost:3000/logs/auth';
+    const LOGS_URI='http://localhost:3000/logs';
 
     // user agent sniffing (from https://www.seanmcp.com/articles/how-to-get-the-browser-version-in-javascript/)
     const getBrowser = () => {
@@ -54,9 +56,9 @@ export const ErrorLogger = (() => {
   let timestampOptions: TimestampOptions = {locale: 'fr-BE', timeZone: 'Europe/Brussels'};
 
     return {
-        init: async (appId:string, appSecret: string, timestampOpts: TimestampOptions):Promise<void> => {
+        init: async (appId:string, appSecret: string, tsOpts: Partial<TimestampOptions>):Promise<void> => {
             try {
-                timestampOptions = timestampOpts;
+                timestampOptions = {...tsOpts, ...timestampOptions};
                 if (AUTH_URI){
                     const data = await fetch(AUTH_URI, {
                         method: 'POST',

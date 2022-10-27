@@ -29,7 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.authenticate = void 0;
 const bcrypt = __importStar(require("bcryptjs"));
 const project_1 = __importDefault(require("../models/project"));
-const uuidv4_1 = require("uuidv4");
+const uuid_1 = require("uuid");
 const jwt = __importStar(require("jsonwebtoken"));
 const env_1 = require("../utils/env");
 const authenticate = async (req, res, next) => {
@@ -48,7 +48,7 @@ const authenticate = async (req, res, next) => {
             err.statusCode = 403;
             throw err;
         }
-        const sessionId = (0, uuidv4_1.uuid)();
+        const sessionId = (0, uuid_1.v4)();
         const token = jwt.sign({
             appId: req.body.appId,
             sessionId

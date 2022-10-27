@@ -1,7 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const env_1 = require("../../utils/env");
-const ErrorLogger = (() => {
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+export const ErrorLogger = (() => {
     class ErrorReport {
         constructor(message, name, stackTrace, browserVersion, timestamp) {
             this.message = message;
@@ -11,6 +17,8 @@ const ErrorLogger = (() => {
             this.timestamp = timestamp;
         }
     }
+    const AUTH_URI = 'http://localhost:3000/logs/auth';
+    const LOGS_URI = 'http://localhost:3000/logs';
     // user agent sniffing (from https://www.seanmcp.com/articles/how-to-get-the-browser-version-in-javascript/)
     const getBrowser = () => {
         try {
@@ -48,14 +56,11 @@ const ErrorLogger = (() => {
     };
     let timestampOptions = { locale: 'fr-BE', timeZone: 'Europe/Brussels' };
     return {
-        init: async (appId, appSecret, timestampOpts) => {
+        init: (appId, appSecret, tsOpts) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                if (timestampOpts) {
-                    timestampOptions = Object.assign(Object.assign({}, timestampOpts), timestampOptions);
-                }
-                ;
-                if (env_1.AUTH_URI) {
-                    const data = await fetch(env_1.AUTH_URI, {
+                timestampOptions = Object.assign(Object.assign({}, tsOpts), timestampOptions);
+                if (AUTH_URI) {
+                    const data = yield fetch(AUTH_URI, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -63,7 +68,7 @@ const ErrorLogger = (() => {
                             appSecret
                         })
                     });
-                    const parsedData = await data.json();
+                    const parsedData = yield data.json();
                     if (data.ok) {
                         sessionStorage.setItem('error-log-token', parsedData.token);
                     }
@@ -79,14 +84,14 @@ const ErrorLogger = (() => {
                 console.log(error);
                 window.alert('ErrorLogger authentication failed: check console or contact administrator.');
             }
-        },
-        send: async (error) => {
+        }),
+        send: (error) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const browser = getBrowser();
                 const ts = timestamp(timestampOptions);
                 const errorRep = new ErrorReport(error.message, error.name, error.stack, browser, ts);
-                if (env_1.LOGS_URI) {
-                    const data = await fetch(env_1.LOGS_URI, {
+                if (LOGS_URI) {
+                    const data = yield fetch(LOGS_URI, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -94,7 +99,7 @@ const ErrorLogger = (() => {
                         },
                         body: JSON.stringify(errorRep)
                     });
-                    const parsedData = await data.json();
+                    const parsedData = yield data.json();
                     console.log(parsedData.message);
                 }
                 else {
@@ -105,6 +110,6 @@ const ErrorLogger = (() => {
                 console.log(error);
                 window.alert('Error logging error in error DB');
             }
-        }
+        })
     };
 })();

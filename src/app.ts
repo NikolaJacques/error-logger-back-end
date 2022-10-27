@@ -24,6 +24,7 @@ app.use('/logs', logRoutes);
 app.use((err: Error & {message: string, statusCode: number}, _: Request, res: Response, _2: NextFunction) => {
     const message = err.message ? err.message : 'Unknown Server error';
     const statusCode = err.statusCode ? err.statusCode : 500;
+    console.log(err);
     res.status(statusCode).json({ message });
 });
 

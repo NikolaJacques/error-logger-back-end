@@ -47,6 +47,7 @@ app.use('/logs', log_1.default);
 app.use((err, _, res, _2) => {
     const message = err.message ? err.message : 'Unknown Server error';
     const statusCode = err.statusCode ? err.statusCode : 500;
+    console.log(err);
     res.status(statusCode).json({ message });
 });
 mongoose.connect(env_1.MONGO_URI !== null && env_1.MONGO_URI !== void 0 ? env_1.MONGO_URI : '')

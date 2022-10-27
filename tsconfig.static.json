@@ -1,5 +1,11 @@
 {
     "extends": "./tsconfig.json",
-    "rootDir": "./src/public",
-    "outDir": "./dist/public"
+    "exclude":[],
+    "include": [
+        "./src/public"
+    ],
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "es2015"
+      }
 }
