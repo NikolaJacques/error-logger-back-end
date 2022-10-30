@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.auth = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const env_1 = require("../utils/env");
-const auth = (req, res, next) => {
+const auth = (req, _, next) => {
     try {
         const token = req.get('Authorization').split(' ')[1];
         const decodedToken = jwt.verify(token, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');

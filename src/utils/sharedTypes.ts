@@ -1,6 +1,7 @@
 export interface AuthResponse {
     message: string,
-    token?: string | undefined
+    token?: string | undefined,
+    timestampOtions?: TimestampOptions | undefined
 }
 
 export interface AuthRequest {
@@ -17,3 +18,8 @@ export interface ErrorReportInterface {
 };
 
 export type ErrorResponseType = Error & {statusCode: number};
+
+export interface TimestampOptions {
+    locale: string,
+    timeZone: string
+}

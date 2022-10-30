@@ -1,10 +1,12 @@
 import { Schema, model, ObjectId } from 'mongoose';
+import { TimestampOptions } from '../utils/sharedTypes';
 
 interface ProjectInterface {
     name: string,
     secret: string,
     description: string,
     user: ObjectId,
+    timestampOptions: TimestampOptions,
     createdAt: Date,
     active: boolean
 }
@@ -22,9 +24,13 @@ const projectSchema = new Schema<ProjectInterface>({
         type: String,
         required: false
     },
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+    timestampOptions: {
+        type: Object,
+        required: true,
+        default: {
+            locale: 'fr-BE',
+            timeZone: 'Europe/Brussels'
+        }
     },
     createdAt: {
         type: Date,

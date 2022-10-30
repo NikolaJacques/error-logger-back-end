@@ -15,7 +15,7 @@ interface ResponseBodyInterface {
 
 export type AuthFunctionType = RequestHandler<unknown, ResponseBodyInterface, RequestBodyInterface>;
 
-export const auth:AuthFunctionType = (req, res, next) => {
+export const auth:AuthFunctionType = (req, _, next) => {
     try {
         const token = req.get('Authorization')!.split(' ')[1];
         const decodedToken = jwt.verify(token, JWT_SECRET ?? '');

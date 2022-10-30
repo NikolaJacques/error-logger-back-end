@@ -30,9 +30,10 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose = __importStar(require("mongoose"));
 const log_1 = __importDefault(require("./routes/log"));
+const projects_1 = __importDefault(require("./routes/projects"));
 const path_1 = __importDefault(require("path"));
-const bcrypt = __importStar(require("bcryptjs"));
 const project_1 = __importDefault(require("./models/project"));
+const user_1 = __importDefault(require("./models/user"));
 const env_1 = require("./utils/env");
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
@@ -44,6 +45,7 @@ app.use((_, res, next) => {
 });
 app.use('/', express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use('/logs', log_1.default);
+app.use('/projects', projects_1.default);
 app.use((err, _, res, _2) => {
     const message = err.message ? err.message : 'Unknown Server error';
     const statusCode = err.statusCode ? err.statusCode : 500;
@@ -55,14 +57,22 @@ mongoose.connect(env_1.MONGO_URI !== null && env_1.MONGO_URI !== void 0 ? env_1.
     .catch(err => console.log(err));
 (async () => {
     try {
-        const project = await project_1.default.findById('634aca2bc0e1e983aef48b78').exec();
+        const project = await project_1.default.findById('635d4399854b53aa6a6a4f0a');
         if (!project) {
             await project_1.default.create({
-                secret: await bcrypt.hash('1234567890', 12),
-                name: 'test project',
-                email: 'user@test.com'
+                secret: '1234567890',
+                name: 'test project'
             });
-            console.log('project created');
+            console.log('test project created');
+        }
+        const user = await user_1.default.findById('635da712cdc3d0103dc19265');
+        if (!user) {
+            await user_1.default.create({
+                name: 'test user',
+                email: 'user@test.com',
+                projects: [new mongoose.Types.ObjectId('635d4399854b53aa6a6a4f0a')]
+            });
+            console.log('test user created');
         }
     }
     catch (error) {

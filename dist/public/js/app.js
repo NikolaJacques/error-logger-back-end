@@ -17,8 +17,6 @@ export const ErrorLogger = (() => {
             this.timestamp = timestamp;
         }
     }
-    const AUTH_URI = 'http://localhost:3000/logs/auth';
-    const LOGS_URI = 'http://localhost:3000/logs';
     // user agent sniffing (from https://www.seanmcp.com/articles/how-to-get-the-browser-version-in-javascript/)
     const getBrowser = () => {
         try {
@@ -55,10 +53,11 @@ export const ErrorLogger = (() => {
         }
     };
     let timestampOptions = { locale: 'fr-BE', timeZone: 'Europe/Brussels' };
+    const url = 'http://localhost:3000/';
     return {
-        init: (appId, appSecret, tsOpts) => __awaiter(void 0, void 0, void 0, function* () {
+        init: (appId, appSecret) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                timestampOptions = Object.assign(Object.assign({}, tsOpts), timestampOptions);
+                const AUTH_URI = url + 'auth';
                 if (AUTH_URI) {
                     const data = yield fetch(AUTH_URI, {
                         method: 'POST',
@@ -71,6 +70,7 @@ export const ErrorLogger = (() => {
                     const parsedData = yield data.json();
                     if (data.ok) {
                         sessionStorage.setItem('error-log-token', parsedData.token);
+                        timestampOptions = parsedData.timestampOtions ? parsedData.timestampOtions : timestampOptions;
                     }
                     else {
                         throw new Error(parsedData.message);
@@ -87,6 +87,7 @@ export const ErrorLogger = (() => {
         }),
         send: (error) => __awaiter(void 0, void 0, void 0, function* () {
             try {
+                const LOGS_URI = url + 'logs';
                 const browser = getBrowser();
                 const ts = timestamp(timestampOptions);
                 const errorRep = new ErrorReport(error.message, error.name, error.stack, browser, ts);
@@ -110,6 +111,8 @@ export const ErrorLogger = (() => {
                 console.log(error);
                 window.alert('Error logging error in error DB');
             }
-        })
+        }),
+        trace: (e, fn) => {
+        }
     };
 })();

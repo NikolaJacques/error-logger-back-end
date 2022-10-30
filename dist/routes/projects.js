@@ -23,25 +23,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = void 0;
-const jwt = __importStar(require("jsonwebtoken"));
-const env_1 = require("../utils/env");
-const auth = (req, _, next) => {
-    try {
-        const token = req.get('Authorization').split(' ')[1];
-        const decodedToken = jwt.verify(token, env_1.JWT_ADMIN_SECRET !== null && env_1.JWT_ADMIN_SECRET !== void 0 ? env_1.JWT_ADMIN_SECRET : '');
-        if (!decodedToken) {
-            const err = new Error();
-            err.message = 'Could not authenticate; request failed.';
-            err.statusCode = 401;
-            throw err;
-        }
-        const { userId } = decodedToken;
-        req.userId = userId;
-        next();
-    }
-    catch (err) {
-        next(err);
-    }
-};
-exports.auth = auth;
+const express_1 = require("express");
+const adminAuth_1 = require("../middleware/adminAuth");
+const permissions_1 = require("../middleware/permissions");
+const projectController = __importStar(require("../controllers/projects"));
+const router = (0, express_1.Router)();
+router.get('/:id', adminAuth_1.auth, permissions_1.permissions, projectController.getProject);
+exports.default = router;

@@ -1,4 +1,4 @@
-import {ErrorReportInterface, AuthResponse, AuthRequest} from '../../utils/sharedTypes';
+import {ErrorReportInterface, AuthResponse, AuthRequest, TimestampOptions} from '../../utils/sharedTypes';
 
 export const ErrorLogger = (() => {
 
@@ -11,14 +11,6 @@ export const ErrorLogger = (() => {
             public timestamp: string|undefined
         ){}
     }
-
-    interface TimestampOptions {
-        locale: string,
-        timeZone: string
-    }
-
-    const AUTH_URI='http://localhost:3000/logs/auth';
-    const LOGS_URI='http://localhost:3000/logs';
 
     // user agent sniffing (from https://www.seanmcp.com/articles/how-to-get-the-browser-version-in-javascript/)
     const getBrowser = () => {
@@ -53,12 +45,13 @@ export const ErrorLogger = (() => {
     }
   }
 
-  let timestampOptions: TimestampOptions = {locale: 'fr-BE', timeZone: 'Europe/Brussels'};
+  let timestampOptions:TimestampOptions = {locale: 'fr-BE', timeZone: 'Europe/Brussels'};
+  const url = 'http://localhost:3000/';
 
     return {
-        init: async (appId:string, appSecret: string, tsOpts: Partial<TimestampOptions>):Promise<void> => {
+        init: async (appId:string, appSecret: string):Promise<void> => {
             try {
-                timestampOptions = {...tsOpts, ...timestampOptions};
+                const AUTH_URI= url + 'auth';
                 if (AUTH_URI){
                     const data = await fetch(AUTH_URI, {
                         method: 'POST',
@@ -71,6 +64,7 @@ export const ErrorLogger = (() => {
                     const parsedData: AuthResponse = await data.json();
                     if (data.ok){
                         sessionStorage.setItem('error-log-token', parsedData.token!);
+                        timestampOptions = parsedData.timestampOtions ? parsedData.timestampOtions : timestampOptions;
                     } else {
                         throw new Error(parsedData.message);
                     }
@@ -85,6 +79,7 @@ export const ErrorLogger = (() => {
         },
         send: async (error: Error):Promise<void> => {
             try {
+                const LOGS_URI = url + 'logs';
                 const browser = getBrowser();
                 const ts:string = timestamp(timestampOptions);
                 const errorRep = new ErrorReport(error.message, error.name, error.stack!, browser!, ts);

@@ -14,9 +14,13 @@ const projectSchema = new mongoose_1.Schema({
         type: String,
         required: false
     },
-    user: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'User'
+    timestampOptions: {
+        type: Object,
+        required: true,
+        default: {
+            locale: 'fr-BE',
+            timeZone: 'Europe/Brussels'
+        }
     },
     createdAt: {
         type: Date,

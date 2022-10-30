@@ -27,7 +27,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.authenticate = void 0;
-const bcrypt = __importStar(require("bcryptjs"));
 const project_1 = __importDefault(require("../models/project"));
 const uuid_1 = require("uuid");
 const jwt = __importStar(require("jsonwebtoken"));
@@ -41,8 +40,7 @@ const authenticate = async (req, res, next) => {
             err.statusCode = 404;
             throw err;
         }
-        const credentialsOk = await bcrypt.compare(req.body.appSecret, project.secret);
-        if (!credentialsOk) {
+        if (req.body.appSecret !== project.secret) {
             const err = new Error();
             err.message = 'Authentication unsuccessful; wrong credentials.';
             err.statusCode = 403;
@@ -55,7 +53,8 @@ const authenticate = async (req, res, next) => {
         }, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
         res.status(200).json({
             message: 'Authentication successful.',
-            token
+            token,
+            timestampOtions: project.timestampOptions
         });
     }
     catch (err) {

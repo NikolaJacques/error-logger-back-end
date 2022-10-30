@@ -1,10 +1,9 @@
-import { Schema, model, ObjectId } from 'mongoose';
+import { Schema, model, ObjectId, Types } from 'mongoose';
 
 interface UserInterface {
     name: string,
     email: string,
-    projects: ObjectId[],
-    permissions: string[]
+    projects: ObjectId[]
 }
 
 const userSchema = new Schema<UserInterface>({
@@ -20,10 +19,6 @@ const userSchema = new Schema<UserInterface>({
         type: Schema.Types.ObjectId,
         ref: 'Project',
         default: []
-    }],
-    permissions: [{
-        type: String,
-        default: ['read']
     }]
 }) 
 

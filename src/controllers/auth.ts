@@ -1,22 +1,21 @@
 import { RequestHandler } from 'express';
 import { AuthResponse, AuthRequest, ErrorResponseType } from '../utils/sharedTypes';
 import * as bcrypt from 'bcryptjs';
-import Projects from '../models/project';
+import Project from '../models/project';
 import { v4 as uuid } from 'uuid';
 import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/env';
 
 export const authenticate:RequestHandler<any, AuthResponse, AuthRequest> = async (req, res, next) => {
     try {
-        const project = await Projects.findById(req.body.appId);
+        const project = await Project.findById(req.body.appId);
         if (!project){
             const err = new Error() as ErrorResponseType;
             err.message = 'Project query unsuccessful; appId returned no results.'; 
             err.statusCode = 404;
             throw err;
         }
-        const credentialsOk = await bcrypt.compare(req.body.appSecret, project.secret);
-        if (!credentialsOk){
+        if (req.body.appSecret!==project.secret){
                 const err = new Error() as ErrorResponseType;
                 err.message = 'Authentication unsuccessful; wrong credentials.'; 
                 err.statusCode = 403;
@@ -29,7 +28,8 @@ export const authenticate:RequestHandler<any, AuthResponse, AuthRequest> = async
         }, JWT_SECRET ?? '');
         res.status(200).json({
             message: 'Authentication successful.',
-            token
+            token,
+            timestampOtions: project.timestampOptions
         });
     }
     catch(err){
