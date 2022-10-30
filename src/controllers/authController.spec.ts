@@ -1,10 +1,10 @@
 import {authenticate} from './auth';
 import { ErrorResponseType } from '../utils/sharedTypes';
 import { MONGO_TEST_URI } from '../utils/env';
-import * as bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import Project from '../models/project';
 import User from '../models/user';
+import Log from '../models/log';
 
 describe("Auth controller - authenticate", () => {
 
@@ -15,7 +15,6 @@ describe("Auth controller - authenticate", () => {
         try{
             const uri = MONGO_TEST_URI ?? '';
             await mongoose.connect(uri);
-            console.log('connection to test DB successful');
             const user = new User({
                 name: 'Bob', 
                 email: 'bobsburgers@cc.com'
@@ -23,7 +22,7 @@ describe("Auth controller - authenticate", () => {
             await user.save();
             const project = new Project({
                 name: 'test project', 
-                secret: await bcrypt.hash(SECRET,12), 
+                secret: SECRET, 
                 description: 'a project for doing stuff',
                 user: user._id
             });
@@ -37,6 +36,7 @@ describe("Auth controller - authenticate", () => {
 
     afterAll(async () => {
         try {
+            await Log.deleteMany({});
             await User.deleteMany({});
             await Project.deleteMany({});
             await mongoose.disconnect();
@@ -70,7 +70,7 @@ describe("Auth controller - authenticate", () => {
     test("throws error if incorrect credentials", async () => {
         const req: any = {
             body: {
-                appId: testProject._id,
+                appId: new mongoose.Types.ObjectId(testProject._id),
                 appSecret: 'randomstring'
             }
         };
@@ -86,7 +86,7 @@ describe("Auth controller - authenticate", () => {
         let responseObject: unknown;
         const req: any = {
             body: {
-                appId: testProject._id,
+                appId: new mongoose.Types.ObjectId(testProject._id),
                 appSecret: SECRET
             }
         };

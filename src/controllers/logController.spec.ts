@@ -1,7 +1,6 @@
 import { postLog } from './log';
 import Log from '../models/log';
 import { MONGO_TEST_URI } from '../utils/env';
-import * as bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import Project from '../models/project';
 import User from '../models/user';
@@ -16,7 +15,6 @@ describe("Log controller - post log", () => {
         try{
             const uri = MONGO_TEST_URI ?? '';
             await mongoose.connect(uri);
-            console.log('connection to test DB successful');
             const user = new User({
                 name: 'Bob', 
                 email: 'bobsburgers@cc.com'
@@ -24,7 +22,7 @@ describe("Log controller - post log", () => {
             await user.save();
             const project = new Project({
                 name: 'test project', 
-                secret: await bcrypt.hash(SECRET,12), 
+                secret: SECRET, 
                 description: 'a project for doing stuff',
                 user: user._id
             });
@@ -38,6 +36,7 @@ describe("Log controller - post log", () => {
 
     afterAll(async () => {
         try {
+            await Log.deleteMany({});
             await User.deleteMany({});
             await Project.deleteMany({});
             await mongoose.disconnect();

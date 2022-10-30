@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { AuthResponse, AuthRequest, ErrorResponseType } from '../utils/sharedTypes';
-import * as bcrypt from 'bcryptjs';
 import Project from '../models/project';
 import { v4 as uuid } from 'uuid';
 import * as jwt from 'jsonwebtoken';

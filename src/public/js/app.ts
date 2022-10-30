@@ -46,7 +46,7 @@ export const ErrorLogger = (() => {
   }
 
   let timestampOptions:TimestampOptions = {locale: 'fr-BE', timeZone: 'Europe/Brussels'};
-  const url = 'http://localhost:3000/';
+  const url = 'http://localhost:3000/logs/';
 
     return {
         init: async (appId:string, appSecret: string):Promise<void> => {
@@ -79,7 +79,7 @@ export const ErrorLogger = (() => {
         },
         send: async (error: Error):Promise<void> => {
             try {
-                const LOGS_URI = url + 'logs';
+                const LOGS_URI = url;
                 const browser = getBrowser();
                 const ts:string = timestamp(timestampOptions);
                 const errorRep = new ErrorReport(error.message, error.name, error.stack!, browser!, ts);

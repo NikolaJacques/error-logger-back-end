@@ -53,7 +53,7 @@ export const ErrorLogger = (() => {
         }
     };
     let timestampOptions = { locale: 'fr-BE', timeZone: 'Europe/Brussels' };
-    const url = 'http://localhost:3000/';
+    const url = 'http://localhost:3000/logs/';
     return {
         init: (appId, appSecret) => __awaiter(void 0, void 0, void 0, function* () {
             try {
@@ -87,7 +87,7 @@ export const ErrorLogger = (() => {
         }),
         send: (error) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const LOGS_URI = url + 'logs';
+                const LOGS_URI = url;
                 const browser = getBrowser();
                 const ts = timestamp(timestampOptions);
                 const errorRep = new ErrorReport(error.message, error.name, error.stack, browser, ts);
@@ -111,8 +111,6 @@ export const ErrorLogger = (() => {
                 console.log(error);
                 window.alert('Error logging error in error DB');
             }
-        }),
-        trace: (e, fn) => {
-        }
+        })
     };
 })();
