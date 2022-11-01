@@ -28,9 +28,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.authenticate = void 0;
 const project_1 = __importDefault(require("../models/project"));
+const user_1 = __importDefault(require("../models/user"));
 const uuid_1 = require("uuid");
 const jwt = __importStar(require("jsonwebtoken"));
 const env_1 = require("../utils/env");
+const bcrypt = __importStar(require("bcryptjs"));
 const authenticate = async (req, res, next) => {
     try {
         const project = await project_1.default.findById(req.body.appId);
@@ -62,5 +64,32 @@ const authenticate = async (req, res, next) => {
     }
 };
 exports.authenticate = authenticate;
-const login = (_, _2, _3) => { };
+const login = async (req, res, next) => {
+    try {
+        const user = await user_1.default.findOne({ name: req.body.name });
+        if (!user) {
+            const err = new Error();
+            err.message = 'User not found.';
+            err.statusCode = 404;
+            throw err;
+        }
+        const passwordOk = await bcrypt.compare(req.body.password, user.password);
+        if (!passwordOk) {
+            const err = new Error();
+            err.message = 'Authentication unsuccessful; wrong credentials.';
+            err.statusCode = 403;
+            throw err;
+        }
+        const token = jwt.sign({
+            userId: user._id
+        }, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '', { expiresIn: '1h' });
+        res.status(200).json({
+            message: 'Login successful.',
+            token
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+};
 exports.login = login;

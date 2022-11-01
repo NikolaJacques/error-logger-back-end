@@ -27,7 +27,7 @@ const logSchema = new mongoose_1.Schema({
         required: true
     },
     timestamp: {
-        type: String
+        type: Date
     }
 });
 const Log = (0, mongoose_1.model)('Log', logSchema);

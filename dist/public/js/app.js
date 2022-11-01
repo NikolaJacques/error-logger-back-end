@@ -57,7 +57,7 @@ export const ErrorLogger = (() => {
     return {
         init: (appId, appSecret) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const AUTH_URI = url + 'auth';
+                const AUTH_URI = url + 'auth/app';
                 if (AUTH_URI) {
                     const data = yield fetch(AUTH_URI, {
                         method: 'POST',

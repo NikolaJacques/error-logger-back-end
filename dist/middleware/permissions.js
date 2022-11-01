@@ -8,7 +8,8 @@ const user_1 = __importDefault(require("../models/user"));
 const mongoose_1 = require("mongoose");
 const permissions = async (req, _, next) => {
     try {
-        const user = await user_1.default.findById(req.userId);
+        const userId = req.userId;
+        const user = await user_1.default.findById(new mongoose_1.Schema.Types.ObjectId(userId));
         if (!user) {
             const err = new Error();
             err.message = 'User not found.';

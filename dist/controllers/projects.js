@@ -4,9 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteProject = exports.updateProject = exports.addProject = exports.getProject = void 0;
+const mongoose_1 = require("mongoose");
 const project_1 = __importDefault(require("../models/project"));
 const getProject = async (req, res, _) => {
-    const project = await project_1.default.findById(req.params.id);
+    const project = await project_1.default.findById(new mongoose_1.Schema.Types.ObjectId(req.params.id));
     if (!project) {
         const err = new Error();
         err.message = 'Project query unsuccessful; appId returned no results.';

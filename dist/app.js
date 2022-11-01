@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose = __importStar(require("mongoose"));
+const auth_1 = __importDefault(require("./routes/auth"));
 const log_1 = __importDefault(require("./routes/log"));
 const projects_1 = __importDefault(require("./routes/projects"));
 const path_1 = __importDefault(require("path"));
@@ -44,6 +45,7 @@ app.use((_, res, next) => {
     next();
 });
 app.use('/', express_1.default.static(path_1.default.join(__dirname, 'public')));
+app.use('/auth', auth_1.default);
 app.use('/logs', log_1.default);
 app.use('/projects', projects_1.default);
 app.use((err, _, res, _2) => {
