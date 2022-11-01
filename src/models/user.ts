@@ -1,6 +1,6 @@
-import { Schema, model, ObjectId, Types } from 'mongoose';
+import { Schema, model, ObjectId } from 'mongoose';
 
-interface UserInterface {
+export interface UserInterface {
     name: string,
     email: string,
     projects: ObjectId[]

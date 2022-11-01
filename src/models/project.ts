@@ -1,7 +1,7 @@
 import { Schema, model, ObjectId } from 'mongoose';
 import { TimestampOptions } from '../utils/sharedTypes';
 
-interface ProjectInterface {
+export interface ProjectInterface {
     name: string,
     secret: string,
     description: string,

@@ -14,7 +14,7 @@ export interface ErrorReportInterface {
     name: string,
     stackTrace: string,
     browserVersion: string,
-    timestamp: string|undefined
+    timestamp: string
 };
 
 export type ErrorResponseType = Error & {statusCode: number};
@@ -23,3 +23,5 @@ export interface TimestampOptions {
     locale: string,
     timeZone: string
 }
+
+export type ViewType = 'atomic' | 'error' | 'session';

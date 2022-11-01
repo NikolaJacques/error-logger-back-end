@@ -1,9 +1,13 @@
 import { Schema, model } from 'mongoose';
-import { ErrorReportInterface } from '../utils/sharedTypes';
 
-interface ErrorLogInterface extends ErrorReportInterface {
+export interface ErrorLogInterface {
     appId: string,
-    sessionId: string
+    sessionId: string,
+    message: string,
+    name: string,
+    stackTrace: string,
+    browserVersion: string,
+    timestamp: Date
 }
 
 const logSchema = new Schema<ErrorLogInterface>({
@@ -32,7 +36,7 @@ const logSchema = new Schema<ErrorLogInterface>({
         required: true
     },
     timestamp: {
-        type: String
+        type: Date
     }
 });
 
