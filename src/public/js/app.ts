@@ -8,7 +8,7 @@ export const ErrorLogger = (() => {
             public name: string,
             public stackTrace: string,
             public browserVersion: string,
-            public timestamp: string|undefined
+            public timestamp: string
         ){}
     }
 
@@ -51,7 +51,7 @@ export const ErrorLogger = (() => {
     return {
         init: async (appId:string, appSecret: string):Promise<void> => {
             try {
-                const AUTH_URI= url + 'auth';
+                const AUTH_URI= url + 'auth/app';
                 if (AUTH_URI){
                     const data = await fetch(AUTH_URI, {
                         method: 'POST',

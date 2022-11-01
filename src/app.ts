@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import bodyparser from 'body-parser';
 import * as mongoose from 'mongoose';
+import authRoutes from './routes/auth';
 import logRoutes from './routes/log';
 import projectRoutes from './routes/projects';
 import path from 'path';
@@ -20,6 +21,7 @@ app.use((_, res, next) => {
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 
+app.use('/auth', authRoutes);
 app.use('/logs', logRoutes);
 app.use('/projects', projectRoutes);
 

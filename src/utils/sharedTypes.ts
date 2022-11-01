@@ -1,3 +1,5 @@
+// shared between API and static module
+
 export interface AuthResponse {
     message: string,
     token?: string | undefined,
@@ -24,4 +26,11 @@ export interface TimestampOptions {
     timeZone: string
 }
 
+// shared between API and front end
+
 export type ViewType = 'atomic' | 'error' | 'session';
+
+export interface AdminAuthRequest {
+    name: string,
+    password: string
+};

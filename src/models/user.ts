@@ -2,12 +2,17 @@ import { Schema, model, ObjectId } from 'mongoose';
 
 export interface UserInterface {
     name: string,
+    password: string,
     email: string,
     projects: ObjectId[]
 }
 
 const userSchema = new Schema<UserInterface>({
     name:{
+        type: String,
+        required: true
+    },
+    password: {
         type: String,
         required: true
     },
