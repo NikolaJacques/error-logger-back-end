@@ -26,11 +26,8 @@ const projectSchema = new Schema<ProjectInterface>({
     },
     timestampOptions: {
         type: Object,
-        required: true,
-        default: {
-            locale: 'fr-BE',
-            timeZone: 'Europe/Brussels'
-        }
+        required: false,
+        default: {}
     },
     createdAt: {
         type: Date,

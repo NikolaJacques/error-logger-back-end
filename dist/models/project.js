@@ -16,11 +16,8 @@ const projectSchema = new mongoose_1.Schema({
     },
     timestampOptions: {
         type: Object,
-        required: true,
-        default: {
-            locale: 'fr-BE',
-            timeZone: 'Europe/Brussels'
-        }
+        required: false,
+        default: {}
     },
     createdAt: {
         type: Date,

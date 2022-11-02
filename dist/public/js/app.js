@@ -42,17 +42,15 @@ export const ErrorLogger = (() => {
         }
     };
     // timestamp function
-    const timestamp = (options) => {
-        const { locale, timeZone } = options;
+    const timestamp = () => {
         try {
-            const dateStr = (new Date).toLocaleString(locale, { timeZone });
+            const dateStr = (new Date).getTime();
             return dateStr;
         }
         catch (error) {
             throw new Error('Couldn\'t retrieve date');
         }
     };
-    let timestampOptions = { locale: 'fr-BE', timeZone: 'Europe/Brussels' };
     const url = 'http://localhost:3000/logs/';
     return {
         init: (appId, appSecret) => __awaiter(void 0, void 0, void 0, function* () {
@@ -70,7 +68,6 @@ export const ErrorLogger = (() => {
                     const parsedData = yield data.json();
                     if (data.ok) {
                         sessionStorage.setItem('error-log-token', parsedData.token);
-                        timestampOptions = parsedData.timestampOtions ? parsedData.timestampOtions : timestampOptions;
                     }
                     else {
                         throw new Error(parsedData.message);
@@ -89,7 +86,7 @@ export const ErrorLogger = (() => {
             try {
                 const LOGS_URI = url;
                 const browser = getBrowser();
-                const ts = timestamp(timestampOptions);
+                const ts = timestamp();
                 const errorRep = new ErrorReport(error.message, error.name, error.stack, browser, ts);
                 if (LOGS_URI) {
                     const data = yield fetch(LOGS_URI, {

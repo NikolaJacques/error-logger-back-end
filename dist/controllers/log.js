@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteLogs = exports.postLog = exports.getLogs = void 0;
 const log_1 = __importDefault(require("../models/log"));
 const queries_1 = require("../utils/queries");
+const project_1 = __importDefault(require("../models/project"));
 const getLogs = async (req, res, next) => {
     try {
         const { startDate, endDate, sessionId, name, page, limit, view } = req.query;
@@ -25,21 +26,23 @@ const getLogs = async (req, res, next) => {
             queryObject = Object.assign(Object.assign({}, queryObject), { name });
         }
         ;
+        const project = await project_1.default.findById(req.params.id);
+        const timestampOptions = project.timestampOptions;
         let logs;
         switch (view) {
             case 'atomic':
-                logs = await (0, queries_1.atomicView)(parseInt(limit), parseInt(page));
+                logs = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
             case 'session':
-                logs = await (0, queries_1.sessionView)(queryObject, parseInt(limit), parseInt(page));
+                logs = await (0, queries_1.sessionView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
             case 'error':
-                logs = await (0, queries_1.errorView)(queryObject, parseInt(limit), parseInt(page));
+                logs = await (0, queries_1.errorView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
             default:
-                logs = await log_1.default.find(queryObject).sort({ sessionId: -1, timeStamp: 1 });
+                logs = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
         }
         ;
         if (logs.length === 0) {
             return res.status(404).json({
-                message: 'No errors found.'
+                message: 'No logs found.'
             });
         }
         ;

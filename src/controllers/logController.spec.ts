@@ -1,59 +1,26 @@
 import { postLog } from './log';
 import Log from '../models/log';
-import { MONGO_TEST_URI } from '../utils/env';
 import mongoose from 'mongoose';
-import Project from '../models/project';
-import User from '../models/user';
+import {setup, cleanup} from '../utils/mockDB';
+import {ErrorResponseType} from '../utils/sharedTypes';
 
 
 describe("Log controller - post log", () => {
 
-    let testProject:any;
     const SECRET = 'testSecret';
 
-    beforeAll(async () => {
-        try{
-            const uri = MONGO_TEST_URI ?? '';
-            await mongoose.connect(uri);
-            const user = new User({
-                name: 'Bob', 
-                email: 'bobsburgers@cc.com'
-            });
-            await user.save();
-            const project = new Project({
-                name: 'test project', 
-                secret: SECRET, 
-                description: 'a project for doing stuff',
-                user: user._id
-            });
-            await project.save();
-            testProject = project;
-        }
-        catch(err){
-            console.log(err);
-        }
-    });
+    beforeAll(() => setup(SECRET));
 
-    afterAll(async () => {
-        try {
-            await Log.deleteMany({});
-            await User.deleteMany({});
-            await Project.deleteMany({});
-            await mongoose.disconnect();
-        }
-        catch(err){
-            console.log(err);
-        }
-    });
+    afterAll(() => cleanup());
 
-    test("returns log object in response", () => {
+    test("returns log object in response", async () => {
         let responseObject: any;
         const log = {
             message: 'test',
             name: 'test',
             stackTrace: 'test',
             browserVersion: 'test',
-            timestamp: 'test',
+            timestamp: 1604898452084,
             appId: 'test',
             sessionId: 'test'
         }
@@ -69,10 +36,12 @@ describe("Log controller - post log", () => {
                 }
             }
         };
-        const next: any = async () => {
+        const next: any = (error: ErrorResponseType) => {
+            expect(error).toBeFalsy();
+        }
+        await postLog(req, res, next).then(async() => {
             expect(responseObject).toHaveProperty('log');
             expect(await Log.findById(new mongoose.Types.ObjectId(responseObject.log._id))).toBeTruthy();
-        }
-        postLog(req, res, next);
-    })
-})
+        });
+    });
+});

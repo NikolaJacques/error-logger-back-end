@@ -1,50 +1,17 @@
 import {authenticate} from './auth';
 import { ErrorResponseType } from '../utils/sharedTypes';
-import { MONGO_TEST_URI } from '../utils/env';
 import mongoose from 'mongoose';
 import Project from '../models/project';
-import User from '../models/user';
-import Log from '../models/log';
+import {setup, cleanup} from '../utils/mockDB';
 
 describe("Auth controller - authenticate", () => {
 
     let testProject:any;
     const SECRET = 'testSecret';
 
-    beforeAll(async () => {
-        try{
-            const uri = MONGO_TEST_URI ?? '';
-            await mongoose.connect(uri);
-            const user = new User({
-                name: 'Bob', 
-                email: 'bobsburgers@cc.com'
-            });
-            await user.save();
-            const project = new Project({
-                name: 'test project', 
-                secret: SECRET, 
-                description: 'a project for doing stuff',
-                user: user._id
-            });
-            await project.save();
-            testProject = project;
-        }
-        catch(err){
-            console.log(err);
-        }
-    });
+    beforeAll(() => setup(SECRET).then(project => testProject=project));
 
-    afterAll(async () => {
-        try {
-            await Log.deleteMany({});
-            await User.deleteMany({});
-            await Project.deleteMany({});
-            await mongoose.disconnect();
-        }
-        catch(err){
-            console.log(err);
-        }
-    });
+    afterAll(() => cleanup());
 
     test("db returns test project", async () => {
         const project = await Project.findById(testProject._id);
@@ -83,7 +50,7 @@ describe("Auth controller - authenticate", () => {
     });
 
     test("responds with token if authentication successful", async () => {
-        let responseObject: unknown;
+        let responseObj:any;
         const req: any = {
             body: {
                 appId: new mongoose.Types.ObjectId(testProject._id),
@@ -94,16 +61,16 @@ describe("Auth controller - authenticate", () => {
             status: () => {
                 return {
                     json: jest.fn().mockImplementation((result) => {
-                        responseObject = result;
+                        responseObj = result;
                     })
                 }
             }
         };
-        const next: any = () => {
-            expect(responseObject).toHaveProperty('token');
-            expect((responseObject as any).token).not.toBeFalsy();
-        };
-        authenticate(req, res, next);
+        const next: any = () => {};
+        await authenticate(req, res, next).then(() => {
+            expect(responseObj).toHaveProperty('token');
+            expect((responseObj as any).token).not.toBeFalsy();
+        });
     });
 
 })

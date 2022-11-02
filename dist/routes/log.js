@@ -29,6 +29,6 @@ const appAuth_1 = require("../middleware/appAuth");
 const adminAuth_1 = require("../middleware/adminAuth");
 const permissions_1 = require("../middleware/permissions");
 const router = (0, express_1.Router)();
-router.post('/', appAuth_1.auth, logController.postLog);
-router.get('/:id', adminAuth_1.auth, permissions_1.permissions, logController.getLogs);
+router.post('/', appAuth_1.appAuth, logController.postLog);
+router.get('/:id', adminAuth_1.adminAuth, permissions_1.permissions, logController.getLogs);
 exports.default = router;

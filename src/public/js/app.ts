@@ -8,7 +8,7 @@ export const ErrorLogger = (() => {
             public name: string,
             public stackTrace: string,
             public browserVersion: string,
-            public timestamp: string
+            public timestamp: number
         ){}
     }
 
@@ -34,10 +34,9 @@ export const ErrorLogger = (() => {
   }
   
   // timestamp function
-  const timestamp = (options: TimestampOptions) => {
-    const { locale, timeZone } = options;
+  const timestamp = ():number => {
     try {
-      const dateStr = (new Date).toLocaleString(locale, {timeZone});
+      const dateStr = (new Date).getTime();
       return dateStr;
     }
     catch(error){
@@ -45,7 +44,6 @@ export const ErrorLogger = (() => {
     }
   }
 
-  let timestampOptions:TimestampOptions = {locale: 'fr-BE', timeZone: 'Europe/Brussels'};
   const url = 'http://localhost:3000/logs/';
 
     return {
@@ -64,7 +62,6 @@ export const ErrorLogger = (() => {
                     const parsedData: AuthResponse = await data.json();
                     if (data.ok){
                         sessionStorage.setItem('error-log-token', parsedData.token!);
-                        timestampOptions = parsedData.timestampOtions ? parsedData.timestampOtions : timestampOptions;
                     } else {
                         throw new Error(parsedData.message);
                     }
@@ -81,7 +78,7 @@ export const ErrorLogger = (() => {
             try {
                 const LOGS_URI = url;
                 const browser = getBrowser();
-                const ts:string = timestamp(timestampOptions);
+                const ts = timestamp();
                 const errorRep = new ErrorReport(error.message, error.name, error.stack!, browser!, ts);
                 if(LOGS_URI){
                     const data = await fetch(LOGS_URI, {

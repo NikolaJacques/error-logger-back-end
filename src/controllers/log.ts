@@ -1,11 +1,12 @@
 import { FilterQuery } from 'mongoose';
-import { RequestHandler } from 'express';
+import { NextFunction, RequestHandler } from 'express';
 import Log from '../models/log';
 import { ErrorLogInterface } from '../models/log';
 import { errorView, atomicView, sessionView, queryObjectInterface } from '../utils/queries';
-import { ViewType } from '../utils/sharedTypes';
+import { TypedRequest, TypedResponse, ViewType, RequestBodyInterface, QueryInterface, TimestampOptions } from '../utils/sharedTypes';
+import Project from '../models/project';
 
-export const getLogs: RequestHandler = async (req, res, next) => {
+export const getLogs = async (req:TypedRequest<any,Partial<QueryInterface>>, res:TypedResponse<{message: string, logs?: any[]}>, next:NextFunction) => {
     try{
         const {startDate, endDate, sessionId, name, page, limit, view} = req.query;
         let queryObject:FilterQuery<typeof Log>={_id: req.params.id};
@@ -23,21 +24,22 @@ export const getLogs: RequestHandler = async (req, res, next) => {
         if(name){
             queryObject = {...queryObject, name};
         };
-
+        const project = await Project.findById(req.params.id);
+        const timestampOptions:TimestampOptions = project!.timestampOptions;
         let logs;
         switch(view){
             case 'atomic' as ViewType:
-                logs = await atomicView(parseInt(limit as string), parseInt(page as string));
+                logs = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
             case 'session' as ViewType:
-                logs = await sessionView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string));
+                logs = await sessionView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
             case 'error' as ViewType:
-                logs = await errorView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string));
+                logs = await errorView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
             default:
-                logs = await Log.find(queryObject).sort({sessionId:-1,timeStamp:1});
+                logs = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
         };
         if(logs.length===0){
             return res.status(404).json({
-                message: 'No errors found.'
+                message: 'No logs found.'
             });
         };
         res.status(200).json({
@@ -50,7 +52,7 @@ export const getLogs: RequestHandler = async (req, res, next) => {
     }
 };
 
-export const postLog: RequestHandler = async (req, res, next) => {
+export const postLog = async (req:TypedRequest<RequestBodyInterface,any>, res:TypedResponse<{message:string,log:ErrorLogInterface}>, next: NextFunction) => {
     try {
         const logObj:ErrorLogInterface = {...req.body, timestamp: new Date(req.body.timestamp)}
         const log = new Log(logObj);

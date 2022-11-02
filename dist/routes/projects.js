@@ -28,5 +28,5 @@ const adminAuth_1 = require("../middleware/adminAuth");
 const permissions_1 = require("../middleware/permissions");
 const projectController = __importStar(require("../controllers/projects"));
 const router = (0, express_1.Router)();
-router.get('/:id', adminAuth_1.auth, permissions_1.permissions, projectController.getProject);
+router.get('/:id', adminAuth_1.adminAuth, permissions_1.permissions, projectController.getProject);
 exports.default = router;

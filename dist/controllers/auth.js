@@ -55,8 +55,7 @@ const authenticate = async (req, res, next) => {
         }, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
         res.status(200).json({
             message: 'Authentication successful.',
-            token,
-            timestampOtions: project.timestampOptions
+            token
         });
     }
     catch (err) {

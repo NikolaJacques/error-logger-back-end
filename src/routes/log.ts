@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import * as logController from '../controllers/log';
-import {auth as appAuth} from '../middleware/appAuth';
-import {auth as adminAuth} from '../middleware/adminAuth';
+import { appAuth } from '../middleware/appAuth';
+import { adminAuth } from '../middleware/adminAuth';
 import { permissions } from '../middleware/permissions';
 
 const router = Router();

@@ -1,4 +1,5 @@
 import Log from '../models/log';
+import { TimestampOptions } from './sharedTypes';
 
 export interface queryObjectInterface {
     startDate: Date, 
@@ -7,7 +8,7 @@ export interface queryObjectInterface {
     name: string
 }
 
-export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number) => {
+export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _:TimestampOptions) => {
     return await Log.aggregate([
         {$match: queryObject},
         {$group: {
@@ -28,7 +29,7 @@ export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:
     ]);
 };
 
-export const sessionView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number) => {
+export const sessionView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
     return await Log.aggregate([
         {$match: queryObject},
         {$group: {
@@ -45,15 +46,35 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
             "date": -1, "_id.sessionId":-1
         }},
         {$skip: (page-1)*limit},
-        {$limit: limit}
+        {$limit: limit},
+        {$project: {
+            _id: 0,
+            date: {$dateToString: {
+                date:"$date",
+                ...timestampOptions
+            }},
+            totalErrors:1,
+            error:1
+        }}
     ]);
 };
 
-export const atomicView = async(limit:number, page:number) => {
+export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
     return await Log.aggregate([
-        {$match: {}},
+        {$match: queryObject},
         {$sort: { sessionId: 1, timeStamp:-1}},
         {$skip: (page-1)*limit},
-        {$limit: limit}
+        {$limit: limit},
+        {$project: {
+            _id: 0,
+            timestamp: {$dateToString: {
+                date:"$date",
+                ...timestampOptions
+            }},
+            name:1,
+            message:1,
+            stackTrace:1,
+            browserVersion:1
+        }}
     ]);
 };
