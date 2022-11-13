@@ -1,7 +1,8 @@
 {
   "exclude": [
     "**/*.spec.ts",
-    "./src/public"
+    "./src/public",
+    "./src/utils/sharedTypes.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

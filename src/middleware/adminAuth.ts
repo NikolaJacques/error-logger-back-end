@@ -16,7 +16,7 @@ export const adminAuth = (req:TypedRequest<AdminAuthRequest,any>, _:TypedRespons
             throw err;
         }
         const { userId } = (decodedToken as JwtPayload); 
-        (req as typeof req & {userId: string}).userId = userId;
+        req.body.userId = userId;
         next();
     }
     catch(err){

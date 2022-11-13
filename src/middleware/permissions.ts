@@ -1,12 +1,14 @@
 import { RequestHandler } from 'express';
 import { ErrorResponseType } from '../utils/sharedTypes';
+import { TypedRequest, TypedResponse, AdminAuthRequest} from '../utils/sharedTypes';
 import User from '../models/user';
 import {Schema} from 'mongoose';
+import { NextFunction } from 'express';
 
-export const permissions:RequestHandler = async (req, _, next) => {
+export const permissions = async (req: TypedRequest<AdminAuthRequest,any>, _:TypedResponse<any>, next:NextFunction) => {
     try {
-        const userId = (req as typeof req & {userId:string}).userId;
-        const user = await User.findById(new Schema.Types.ObjectId(userId));
+        const userId = req.body.userId;
+        const user = userId?await User.findById(new Schema.Types.ObjectId(userId)):null;
         if (!user){
             const err = new Error() as ErrorResponseType;
             err.message = 'User not found.'; 

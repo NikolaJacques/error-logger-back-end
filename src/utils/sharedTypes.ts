@@ -48,7 +48,8 @@ export type ViewType = 'atomic' | 'error' | 'session';
 
 export interface AdminAuthRequest {
     name: string,
-    password: string
+    password: string,
+    userId?: string
 };
 
 export interface QueryInterface {

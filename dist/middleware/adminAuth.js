@@ -37,7 +37,7 @@ const adminAuth = (req, _, next) => {
             throw err;
         }
         const { userId } = decodedToken;
-        req.userId = userId;
+        req.body.userId = userId;
         next();
     }
     catch (err) {

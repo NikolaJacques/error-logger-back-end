@@ -9,9 +9,9 @@ describe("Log controller - post log", () => {
 
     const SECRET = 'testSecret';
 
-    beforeAll(() => setup(SECRET));
+    beforeAll(async() => {return await setup(SECRET)});
 
-    afterAll(() => cleanup());
+    afterAll(async() => {return await cleanup()});
 
     test("returns log object in response", async () => {
         let responseObject: any;
