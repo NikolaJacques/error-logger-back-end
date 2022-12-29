@@ -30,18 +30,15 @@ const adminAuth = (req, _, next) => {
     try {
         const token = req.get('Authorization').split(' ')[1];
         const decodedToken = jwt.verify(token, env_1.JWT_ADMIN_SECRET !== null && env_1.JWT_ADMIN_SECRET !== void 0 ? env_1.JWT_ADMIN_SECRET : '');
-        if (!decodedToken) {
-            const err = new Error();
-            err.message = 'Could not authenticate; request failed.';
-            err.statusCode = 401;
-            throw err;
-        }
         const { userId } = decodedToken;
         req.body.userId = userId;
         next();
     }
-    catch (err) {
-        next(err);
+    catch (_) {
+        const error = new Error();
+        error.message = 'Could not authenticate; request failed.';
+        error.statusCode = 401;
+        next(error);
     }
 };
 exports.adminAuth = adminAuth;

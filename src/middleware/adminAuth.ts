@@ -9,17 +9,14 @@ export const adminAuth = (req:TypedRequest<AdminAuthRequest,any>, _:TypedRespons
     try {
         const token = req.get('Authorization')!.split(' ')[1];
         const decodedToken = jwt.verify(token, JWT_ADMIN_SECRET ?? '');
-        if (!decodedToken){
-            const err = new Error() as ErrorResponseType;
-            err.message = 'Could not authenticate; request failed.'; 
-            err.statusCode = 401;
-            throw err;
-        }
         const { userId } = (decodedToken as JwtPayload); 
         req.body.userId = userId;
         next();
     }
-    catch(err){
-        next(err);
+    catch(_){
+        const error = new Error() as ErrorResponseType;
+        error.message = 'Could not authenticate; request failed.'; 
+        error.statusCode = 401;
+        next(error);
     }
 };
