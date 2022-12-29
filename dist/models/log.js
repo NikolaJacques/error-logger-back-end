@@ -18,10 +18,14 @@ const logSchema = new mongoose_1.Schema({
         type: String,
         required: true
     },
-    stackTrace: {
+    stack: {
         type: String,
         required: true
     },
+    actions: [{
+            type: Object,
+            default: []
+        }],
     browserVersion: {
         type: String,
         required: true

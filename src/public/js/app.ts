@@ -6,7 +6,8 @@ export const ErrorLogger = (() => {
         constructor(
             public message: string,
             public name: string,
-            public stackTrace: string,
+            public stack: string,
+            public actions: object[],
             public browserVersion: string,
             public timestamp: number
         ){}
@@ -31,74 +32,154 @@ export const ErrorLogger = (() => {
         catch(error){
             throw new Error('Couldn\'t retrieve browser');
         }
-  }
+    }
   
-  // timestamp function
-  const timestamp = ():number => {
-    try {
-      const dateStr = (new Date).getTime();
-      return dateStr;
+    // timestamp function
+    const timestamp = ():number => {
+        try {
+        const dateStr = (new Date).getTime();
+        return dateStr;
+        }
+        catch(error){
+        throw new Error('Couldn\'t retrieve date');
+        }
     }
-    catch(error){
-      throw new Error('Couldn\'t retrieve date');
+
+    const url = 'http://localhost:3000/';
+
+    const cache = (error:Error) => {
+        try {
+            const cachedErrors = localStorage.getItem('errorCache')?JSON.parse(localStorage.getItem('errorCache')!):[];
+            cachedErrors.push(error);
+            localStorage.setItem('errorCache', JSON.stringify(cachedErrors));
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
-  }
 
-  const url = 'http://localhost:3000/logs/';
-
-    return {
-        init: async (appId:string, appSecret: string):Promise<void> => {
-            try {
-                const AUTH_URI= url + 'auth/app';
-                if (AUTH_URI){
-                    const data = await fetch(AUTH_URI, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            appId,
-                            appSecret
-                        } as AuthRequest)
-                    })
-                    const parsedData: AuthResponse = await data.json();
-                    if (data.ok){
-                        sessionStorage.setItem('error-log-token', parsedData.token!);
-                    } else {
-                        throw new Error(parsedData.message);
-                    }
-                } else {
-                    throw new Error('Auth URL not defined');
-                }
-            }
-            catch(error){
-                console.log(error);
-                window.alert('ErrorLogger authentication failed: check console or contact administrator.');
-            }
-        },
-        send: async (error: Error):Promise<void> => {
-            try {
-                const LOGS_URI = url;
-                const browser = getBrowser();
-                const ts = timestamp();
-                const errorRep = new ErrorReport(error.message, error.name, error.stack!, browser!, ts);
-                if(LOGS_URI){
-                    const data = await fetch(LOGS_URI, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + sessionStorage.getItem('error-log-token'),
-                        },
-                        body: JSON.stringify(errorRep)
-                    })
-                    const parsedData = await data.json();
-                    console.log(parsedData.message);
-                } else {
-                    throw new Error('Logs URL not defined');
-                }
-            }
-            catch(error){
-                console.log(error);
-                window.alert('Error logging error in error DB');
+    const checkCache = () => {
+        try {
+            const cachedErrors = localStorage.getItem('errorCache')?JSON.parse(localStorage.getItem('errorCache')!):[];
+            localStorage.setItem('errorCache', JSON.stringify([]));
+            for (let error of cachedErrors){
+                send(error)
+                    .catch(() => cache(error));
             }
         }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    const send = async (error: Error):Promise<void> => {
+        try {
+            const LOGS_URI = url +'logs';
+            let errorRep;
+            if ('timestamp' in error){
+                errorRep = error;
+            } else {
+                const browser = getBrowser();
+                const ts = timestamp();
+                const actions = sessionStorage.getItem('actions')?JSON.parse(sessionStorage.getItem('actions')!):[];
+                sessionStorage.setItem('actions', JSON.stringify([]));
+                const {message, name, stack} = error;
+                errorRep = new ErrorReport(message, name, stack as string, actions, browser, ts);
+            }
+            try {
+                const data = await fetch(LOGS_URI, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + sessionStorage.getItem('error-log-token'),
+                    },
+                    body: JSON.stringify(errorRep)
+                });
+                const parsedData = await data.json();
+                console.log(parsedData.message);
+            }
+            catch(err){
+                cache(errorRep);
+                throw err;
+            }
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    const init = async (appId:string, appSecret: string):Promise<void> => {
+        try {
+            const AUTH_URI = url + 'auth/app';
+            if (AUTH_URI){
+                const data = await fetch(AUTH_URI, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        appId,
+                        appSecret
+                    } as AuthRequest)
+                })
+                const parsedData: AuthResponse = await data.json();
+                if (data.ok){
+                    sessionStorage.setItem('error-log-token', parsedData.token!);
+                } else {
+                    throw new Error(parsedData.message);
+                }
+            } else {
+                throw new Error('Auth URL not defined');
+            }
+            checkCache();
+        }
+        catch(error){
+            console.log(error);
+            window.alert('ErrorLogger authentication failed: check console or contact administrator.');
+        }
+    }
+
+    const trace = (handler:Function) => {
+        try {
+            return (e:Event) => {
+                const actions = !sessionStorage.getItem('actions')?[]:JSON.parse(sessionStorage.getItem('actions')!);
+                const {target, type} = e;
+                const {localName, id, className} = target as Element;
+                actions.push({
+                    target:{
+                        localName,
+                        id,
+                        className
+                    }, 
+                    type
+                });
+                sessionStorage.setItem('actions', JSON.stringify(actions));
+                handler(e);
+            };
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    const traceAll = () => {
+        try {
+            const proxyAEL = new Proxy(new EventTarget().addEventListener, {
+                apply: (target, thisArg, args) => {
+                    const newHandler:any = trace(args[1]);
+                    const newArgs = [args[0], (e:Event) => newHandler(e)];
+                    Reflect.apply(target, thisArg, newArgs);
+                }
+            });
+            EventTarget.prototype.addEventListener = proxyAEL;
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    return {
+        init,
+        send,
+        trace,
+        traceAll
     }
 })();

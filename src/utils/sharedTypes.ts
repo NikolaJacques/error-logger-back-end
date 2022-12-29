@@ -25,7 +25,8 @@ export interface AuthRequest {
 export interface ErrorReportInterface {
     message: string,
     name: string,
-    stackTrace: string,
+    stack: string,
+    actions: object[],
     browserVersion: string,
     timestamp: number
 };

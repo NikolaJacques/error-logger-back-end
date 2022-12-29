@@ -5,7 +5,8 @@ export interface ErrorLogInterface {
     sessionId: string,
     message: string,
     name: string,
-    stackTrace: string,
+    stack: string,
+    actions: object[],
     browserVersion: string,
     timestamp: Date
 }
@@ -27,10 +28,14 @@ const logSchema = new Schema<ErrorLogInterface>({
         type: String,
         required: true
     },
-    stackTrace: {
+    stack: {
         type: String,
         required: true
     },
+    actions: [{
+        type: Object,
+        default: []
+    }],
     browserVersion: {
         type: String,
         required: true
