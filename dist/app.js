@@ -81,4 +81,4 @@ mongoose.connect(env_1.MONGO_URI !== null && env_1.MONGO_URI !== void 0 ? env_1.
         console.log(error);
     }
 })();
-app.listen(3000);
+app.listen(8080);
