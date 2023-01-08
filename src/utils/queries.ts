@@ -54,7 +54,7 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
                 ...timestampOptions
             }},
             totalErrors:1,
-            error:1
+            errors:1
         }}
     ]);
 };

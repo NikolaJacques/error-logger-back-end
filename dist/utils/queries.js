@@ -48,7 +48,7 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
                 _id: 0,
                 date: { $dateToString: Object.assign({ date: "$date" }, timestampOptions) },
                 totalErrors: 1,
-                error: 1
+                errors: 1
             } }
     ]);
 };
