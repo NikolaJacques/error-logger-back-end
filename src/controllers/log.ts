@@ -30,10 +30,13 @@ export const getLogs = async (req:TypedRequest<any,Partial<QueryInterface>>, res
         switch(view){
             case 'atomic' as ViewType:
                 logs = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                break;
             case 'session' as ViewType:
                 logs = await sessionView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                break;
             case 'error' as ViewType:
                 logs = await errorView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                break;
             default:
                 logs = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
         };

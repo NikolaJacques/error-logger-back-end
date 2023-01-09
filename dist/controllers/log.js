@@ -32,10 +32,13 @@ const getLogs = async (req, res, next) => {
         switch (view) {
             case 'atomic':
                 logs = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
+                break;
             case 'session':
                 logs = await (0, queries_1.sessionView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
+                break;
             case 'error':
                 logs = await (0, queries_1.errorView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
+                break;
             default:
                 logs = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
         }
