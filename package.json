@@ -13,7 +13,7 @@
   "author": "Nikola Jacques",
   "license": "ISC",
   "dependencies": {
-    "@nikola_jacques/shared-types": "^1.0.0",
+    "@nikola_jacques/shared-types": "^1.1.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
