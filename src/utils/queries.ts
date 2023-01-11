@@ -10,22 +10,38 @@ export interface queryObjectInterface {
 
 export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _:TimestampOptions) => {
     return await Log.aggregate([
-        {$match: queryObject},
+        {$match: {stackTrace : {$exists: true}}},
         {$group: {
-            _id: {name: "$name", message: "$message", stackTrace: "$stackTrace"},
-            totalErrors: {$count: "$name"},
-            totalSessions: {$count: "$sessionId"},
-            browserVersions: {
-                $addToSet: {
-                    browserVersion: "$browserVersion"
-                }
-            }
+            _id: {
+                name: "$name",
+                message: "$message",
+                stackTrace: "$stackTrace",
+            },
+            totalErrors: {
+                $sum: 1
+            },
+            browserVersion: {
+                $addToSet: "$browserVersion",
+            },
+            sessions: {
+                $addToSet: "$sessionId",
+            },
         }},
         {$sort: {
             "_id.name":1, "_id.message":1
         }},
         {$skip: (page-1)*limit},
-        {$limit: limit}
+        {$limit: limit},
+        {$project: {
+            _id: 0,
+            name: "$_id.name",
+            message: "$_id.message",
+            stack: "$_id.stackTrace",
+            totalSessions: {$size: "$sessions"},
+            totalErrors: 1,
+            browserVersion: 1
+          }
+        }
     ]);
 };
 
@@ -33,7 +49,7 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
     return await Log.aggregate([
         {$match: queryObject},
         {$group: {
-            _id: {sesionId: "$sessionId"},
+            _id: {sessionId: "$sessionId"},
             date: {$min: "$timestamp"},
             totalErrors: {$count: "$name"},
             errors: {

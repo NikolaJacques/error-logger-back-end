@@ -7,22 +7,38 @@ exports.atomicView = exports.sessionView = exports.errorView = void 0;
 const log_1 = __importDefault(require("../models/log"));
 const errorView = async (queryObject, limit, page, _) => {
     return await log_1.default.aggregate([
-        { $match: queryObject },
+        { $match: { stackTrace: { $exists: true } } },
         { $group: {
-                _id: { name: "$name", message: "$message", stackTrace: "$stackTrace" },
-                totalErrors: { $count: "$name" },
-                totalSessions: { $count: "$sessionId" },
-                browserVersions: {
-                    $addToSet: {
-                        browserVersion: "$browserVersion"
-                    }
-                }
+                _id: {
+                    name: "$name",
+                    message: "$message",
+                    stackTrace: "$stackTrace",
+                },
+                totalErrors: {
+                    $sum: 1
+                },
+                browserVersion: {
+                    $addToSet: "$browserVersion",
+                },
+                sessions: {
+                    $addToSet: "$sessionId",
+                },
             } },
         { $sort: {
                 "_id.name": 1, "_id.message": 1
             } },
         { $skip: (page - 1) * limit },
-        { $limit: limit }
+        { $limit: limit },
+        { $project: {
+                _id: 0,
+                name: "$_id.name",
+                message: "$_id.message",
+                stack: "$_id.stackTrace",
+                totalSessions: { $size: "$sessions" },
+                totalErrors: 1,
+                browserVersion: 1
+            }
+        }
     ]);
 };
 exports.errorView = errorView;
@@ -30,7 +46,7 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
     return await log_1.default.aggregate([
         { $match: queryObject },
         { $group: {
-                _id: { sesionId: "$sessionId" },
+                _id: { sessionId: "$sessionId" },
                 date: { $min: "$timestamp" },
                 totalErrors: { $count: "$name" },
                 errors: {

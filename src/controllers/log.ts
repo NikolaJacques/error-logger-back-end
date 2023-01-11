@@ -6,7 +6,7 @@ import { errorView, atomicView, sessionView, queryObjectInterface } from '../uti
 import { TypedRequest, TypedResponse, ViewType, RequestBodyInterface, QueryInterface, TimestampOptions } from '../utils/sharedTypes';
 import Project from '../models/project';
 
-export const getLogs = async (req:TypedRequest<any,Partial<QueryInterface>>, res:TypedResponse<{message: string, logs?: any[]}>, next:NextFunction) => {
+export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, res:TypedResponse<{message: string, logs?: any[]}>, next:NextFunction) => {
     try{
         const {startDate, endDate, sessionId, name, page, limit, view} = req.query;
         let queryObject:FilterQuery<typeof Log>={_id: req.params.id};
@@ -27,14 +27,14 @@ export const getLogs = async (req:TypedRequest<any,Partial<QueryInterface>>, res
         const project = await Project.findById(req.params.id);
         const timestampOptions:TimestampOptions = project!.timestampOptions;
         let logs;
-        switch(view){
-            case 'atomic' as ViewType:
+        switch(view as ViewType){
+            case 'atomic':
                 logs = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
                 break;
-            case 'session' as ViewType:
+            case 'session':
                 logs = await sessionView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
                 break;
-            case 'error' as ViewType:
+            case 'error':
                 logs = await errorView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
                 break;
             default:
