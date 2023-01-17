@@ -59,6 +59,7 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
             errors: {
                 $addToSet: {
                     stack:"$stackTrace",
+                    sessionId: "$sessionId",
                     name: "$name",
                     message: "$message",
                     actions: "$actions",
@@ -77,7 +78,7 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
         {$limit: limit},
         {$project: {
             _id: 0,
-            sessionId:1,
+            sessionId:"$_id.sessionId",
             timestamp: {$dateToString: {
                 date:"$timestamp",
                 ...timestampOptions

@@ -56,6 +56,7 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
                 errors: {
                     $addToSet: {
                         stack: "$stackTrace",
+                        sessionId: "$sessionId",
                         name: "$name",
                         message: "$message",
                         actions: "$actions",
@@ -71,7 +72,7 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
         { $limit: limit },
         { $project: {
                 _id: 0,
-                sessionId: 1,
+                sessionId: "$_id.sessionId",
                 timestamp: { $dateToString: Object.assign({ date: "$timestamp" }, timestampOptions) },
                 totalErrors: 1,
                 errors: 1
