@@ -73,7 +73,7 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
         { $project: {
                 _id: 0,
                 sessionId: "$_id.sessionId",
-                timestamp: { $dateToString: Object.assign({ date: "$timestamp" }, timestampOptions) },
+                timestamp: { $dateToString: Object.assign({ date: "$date" }, timestampOptions) },
                 totalErrors: 1,
                 errors: 1
             } }

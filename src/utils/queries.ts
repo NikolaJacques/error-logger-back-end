@@ -80,7 +80,7 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
             _id: 0,
             sessionId:"$_id.sessionId",
             timestamp: {$dateToString: {
-                date:"$timestamp",
+                date:"$date",
                 ...timestampOptions
             }},
             totalErrors:1,
