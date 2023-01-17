@@ -9,7 +9,7 @@ import Project from '../models/project';
 export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, res:TypedResponse<{message: string, logs?: any[]}>, next:NextFunction) => {
     try{
         const {startDate, endDate, sessionId, name, page, limit, view} = req.query;
-        let queryObject:FilterQuery<typeof Log>={_id: req.params.id};
+        let queryObject:FilterQuery<typeof Log>={appId: req.params.id};
         if(startDate && endDate){
             queryObject = {...queryObject,
                 timeStamp: {

@@ -10,7 +10,7 @@ const project_1 = __importDefault(require("../models/project"));
 const getLogs = async (req, res, next) => {
     try {
         const { startDate, endDate, sessionId, name, page, limit, view } = req.query;
-        let queryObject = { _id: req.params.id };
+        let queryObject = { appId: req.params.id };
         if (startDate && endDate) {
             queryObject = Object.assign(Object.assign({}, queryObject), { timeStamp: {
                     $gte: new Date(startDate),

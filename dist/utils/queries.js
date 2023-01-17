@@ -7,7 +7,9 @@ exports.atomicView = exports.sessionView = exports.errorView = void 0;
 const log_1 = __importDefault(require("../models/log"));
 const errorView = async (queryObject, limit, page, _) => {
     return await log_1.default.aggregate([
-        { $match: { stackTrace: { $exists: true } } },
+        { $match: {
+                stackTrace: { $exists: true }
+            } },
         { $group: {
                 _id: {
                     name: "$name",
@@ -48,10 +50,17 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
         { $group: {
                 _id: { sessionId: "$sessionId" },
                 date: { $min: "$timestamp" },
-                totalErrors: { $count: "$name" },
+                totalErrors: {
+                    $sum: 1
+                },
                 errors: {
                     $addToSet: {
-                        stackTrace: "$stackTrace"
+                        stack: "$stackTrace",
+                        name: "$name",
+                        message: "$message",
+                        actions: "$actions",
+                        browserVersion: "$browserVersion",
+                        timestamp: { $dateToString: Object.assign({ date: "$timestamp" }, timestampOptions) }
                     }
                 }
             } },
@@ -62,7 +71,8 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
         { $limit: limit },
         { $project: {
                 _id: 0,
-                date: { $dateToString: Object.assign({ date: "$date" }, timestampOptions) },
+                sessionId: 1,
+                timestamp: { $dateToString: Object.assign({ date: "$timestamp" }, timestampOptions) },
                 totalErrors: 1,
                 errors: 1
             } }
@@ -77,11 +87,13 @@ const atomicView = async (queryObject, limit, page, timestampOptions) => {
         { $limit: limit },
         { $project: {
                 _id: 0,
-                timestamp: { $dateToString: Object.assign({ date: "$date" }, timestampOptions) },
+                sessionId: 1,
+                timestamp: { $dateToString: Object.assign({ date: "$timestamp" }, timestampOptions) },
                 name: 1,
                 message: 1,
                 stackTrace: 1,
-                browserVersion: 1
+                browserVersion: 1,
+                actions: 1
             } }
     ]);
 };

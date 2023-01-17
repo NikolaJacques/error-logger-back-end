@@ -10,7 +10,9 @@ export interface queryObjectInterface {
 
 export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _:TimestampOptions) => {
     return await Log.aggregate([
-        {$match: {stackTrace : {$exists: true}}},
+        {$match: {
+            stackTrace : {$exists: true}
+        }},
         {$group: {
             _id: {
                 name: "$name",
@@ -51,10 +53,20 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
         {$group: {
             _id: {sessionId: "$sessionId"},
             date: {$min: "$timestamp"},
-            totalErrors: {$count: "$name"},
+            totalErrors: {
+                $sum: 1
+            },
             errors: {
                 $addToSet: {
-                    stackTrace: "$stackTrace"
+                    stack:"$stackTrace",
+                    name: "$name",
+                    message: "$message",
+                    actions: "$actions",
+                    browserVersion: "$browserVersion",
+                    timestamp: {$dateToString: {
+                        date:"$timestamp",
+                        ...timestampOptions
+                    }}
                 }
             }
         }},
@@ -65,8 +77,9 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
         {$limit: limit},
         {$project: {
             _id: 0,
-            date: {$dateToString: {
-                date:"$date",
+            sessionId:1,
+            timestamp: {$dateToString: {
+                date:"$timestamp",
                 ...timestampOptions
             }},
             totalErrors:1,
@@ -83,14 +96,16 @@ export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit
         {$limit: limit},
         {$project: {
             _id: 0,
+            sessionId: 1,
             timestamp: {$dateToString: {
-                date:"$date",
+                date:"$timestamp",
                 ...timestampOptions
             }},
             name:1,
             message:1,
             stackTrace:1,
-            browserVersion:1
+            browserVersion:1,
+            actions: 1
         }}
     ]);
 };
