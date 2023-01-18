@@ -1,5 +1,5 @@
 import { Schema, model, ObjectId } from 'mongoose';
-import {Role} from '../utils/sharedTypes';
+import {Role} from 'frontend-backend';
 
 export interface UserInterface {
     name: string,
