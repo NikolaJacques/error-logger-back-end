@@ -34,7 +34,15 @@ const getProjects = async (_, res, _2) => {
     });
 };
 exports.getProjects = getProjects;
-const addProject = (_, _2, _3) => { };
+const addProject = async (req, res, _) => {
+    const params = req.body;
+    const newProject = await project_1.default.create(params);
+    await project_1.default.findByIdAndUpdate(newProject._id, { $set: { secret: newProject._id } });
+    res.status(200).json({
+        message: 'Project created successfully.',
+        secret: newProject._id
+    });
+};
 exports.addProject = addProject;
 const updateProject = (_, _2, _3) => { };
 exports.updateProject = updateProject;

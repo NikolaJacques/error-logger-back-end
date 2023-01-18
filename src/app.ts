@@ -46,7 +46,7 @@ mongoose.connect(MONGO_URI ?? '')
             });
             console.log('test project created');
         }
-        const user = await User.findById('635da712cdc3d0103dc19265');
+        const user = await User.findById('63c822cf3ba3c07a9049ee9a');
         if(!user){
             await User.create({
                 name: 'test user',
