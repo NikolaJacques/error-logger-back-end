@@ -72,6 +72,8 @@ mongoose.connect(env_1.MONGO_URI !== null && env_1.MONGO_URI !== void 0 ? env_1.
             await user_1.default.create({
                 name: 'test user',
                 email: 'user@test.com',
+                role: 'super admin',
+                password: '$2a$12$Z3fkC3WIL8dUX36rL3qtve7qTdZZx3RauPRUGRWZ9e0swA.c7UD9O',
                 projects: [new mongoose.Types.ObjectId('635d4399854b53aa6a6a4f0a')]
             });
             console.log('test user created');

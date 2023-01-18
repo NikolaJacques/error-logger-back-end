@@ -62,3 +62,5 @@ export interface QueryInterface {
     limit: string, 
     view: string
 }
+
+export type Role = 'user' | 'admin' | 'super admin';

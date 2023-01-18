@@ -1,9 +1,11 @@
 import { Schema, model, ObjectId } from 'mongoose';
+import {Role} from '../utils/sharedTypes';
 
 export interface UserInterface {
     name: string,
     password: string,
     email: string,
+    role: Role,
     projects: ObjectId[]
 }
 
@@ -19,6 +21,11 @@ const userSchema = new Schema<UserInterface>({
     email:{
         type: String,
         required: true
+    },
+    role: {
+        type: String,
+        required: true,
+        default: 'user'
     },
     projects: [{
         type: Schema.Types.ObjectId,
