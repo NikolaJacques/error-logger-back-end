@@ -1,4 +1,3 @@
-import { FilterQuery } from 'mongoose';
 import Log from '../models/log';
 import { TimestampOptions } from './sharedTypes';
 
