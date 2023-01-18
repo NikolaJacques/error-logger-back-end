@@ -28,22 +28,22 @@ const getLogs = async (req, res, next) => {
         ;
         const project = await project_1.default.findById(req.params.id);
         const timestampOptions = project.timestampOptions;
-        let logs;
+        let data;
         switch (view) {
             case 'atomic':
-                logs = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
                 break;
             case 'session':
-                logs = await (0, queries_1.sessionView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.sessionView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
                 break;
             case 'error':
-                logs = await (0, queries_1.errorView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.errorView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
                 break;
             default:
-                logs = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
         }
         ;
-        if (logs.length === 0) {
+        if (data.total === 0) {
             return res.status(404).json({
                 message: 'No logs found.'
             });
@@ -51,7 +51,8 @@ const getLogs = async (req, res, next) => {
         ;
         res.status(200).json({
             message: 'Logs retrieved successfully',
-            logs
+            total: data.total,
+            logs: data.logs
         });
     }
     catch (err) {

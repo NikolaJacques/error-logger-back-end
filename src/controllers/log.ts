@@ -6,7 +6,9 @@ import { errorView, atomicView, sessionView, queryObjectInterface } from '../uti
 import { TypedRequest, TypedResponse, ViewType, RequestBodyInterface, QueryInterface, TimestampOptions } from '../utils/sharedTypes';
 import Project from '../models/project';
 
-export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, res:TypedResponse<{message: string, logs?: any[]}>, next:NextFunction) => {
+type ResponseType = {message: string, logs: any[], total:number} | {message: string};
+
+export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, res:TypedResponse<ResponseType>, next:NextFunction) => {
     try{
         const {startDate, endDate, sessionId, name, page, limit, view} = req.query;
         let queryObject:FilterQuery<typeof Log>={appId: req.params.id};
@@ -26,28 +28,29 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
         };
         const project = await Project.findById(req.params.id);
         const timestampOptions:TimestampOptions = project!.timestampOptions;
-        let logs;
+        let data;
         switch(view as ViewType){
             case 'atomic':
-                logs = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
                 break;
             case 'session':
-                logs = await sessionView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await sessionView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
                 break;
             case 'error':
-                logs = await errorView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await errorView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
                 break;
             default:
-                logs = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
         };
-        if(logs.length===0){
+        if(data.total===0){
             return res.status(404).json({
                 message: 'No logs found.'
             });
         };
         res.status(200).json({
             message: 'Logs retrieved successfully',
-            logs
+            total: data.total,
+            logs: data.logs
         });
     }
     catch(err){

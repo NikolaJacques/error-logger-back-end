@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import Log from '../models/log';
 import { TimestampOptions } from './sharedTypes';
 
@@ -9,10 +10,8 @@ export interface queryObjectInterface {
 }
 
 export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _:TimestampOptions) => {
-    return await Log.aggregate([
-        {$match: {
-            stackTrace : {$exists: true}
-        }},
+    const preCountStages = [
+        {$match: queryObject},
         {$group: {
             _id: {
                 name: "$name",
@@ -28,7 +27,10 @@ export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:
             sessions: {
                 $addToSet: "$sessionId",
             },
-        }},
+        }}];
+    const total = await Log.aggregate([...preCountStages, {$count:"total"}]); 
+    const logs = await Log.aggregate([
+        ...preCountStages,
         {$sort: {
             "_id.name":1, "_id.message":1
         }},
@@ -45,10 +47,11 @@ export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:
           }
         }
     ]);
+    return {logs, total:total[0].total};
 };
 
 export const sessionView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
-    return await Log.aggregate([
+    const preCountStages = [
         {$match: queryObject},
         {$group: {
             _id: {sessionId: "$sessionId"},
@@ -70,7 +73,10 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
                     }}
                 }
             }
-        }},
+        }}];
+    const total = await Log.aggregate([...preCountStages, {$count:"total"}]); 
+    const logs = await Log.aggregate([
+        ...preCountStages,
         {$sort: {
             "date": -1, "_id.sessionId":-1
         }},
@@ -87,11 +93,14 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
             errors:1
         }}
     ]);
+    return {logs, total:total[0].total};
 };
 
 export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
-    return await Log.aggregate([
-        {$match: queryObject},
+    const preCountStages = [{$match: queryObject}];
+    const total = await Log.aggregate([...preCountStages, {$count:"total"}]); 
+    const logs = await Log.aggregate([
+        ...preCountStages,
         {$sort: { sessionId: 1, timeStamp:-1}},
         {$skip: (page-1)*limit},
         {$limit: limit},
@@ -109,4 +118,5 @@ export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit
             actions: 1
         }}
     ]);
+    return {logs, total:total[0].total};
 };

@@ -6,10 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.atomicView = exports.sessionView = exports.errorView = void 0;
 const log_1 = __importDefault(require("../models/log"));
 const errorView = async (queryObject, limit, page, _) => {
-    return await log_1.default.aggregate([
-        { $match: {
-                stackTrace: { $exists: true }
-            } },
+    const preCountStages = [
+        { $match: queryObject },
         { $group: {
                 _id: {
                     name: "$name",
@@ -25,7 +23,11 @@ const errorView = async (queryObject, limit, page, _) => {
                 sessions: {
                     $addToSet: "$sessionId",
                 },
-            } },
+            } }
+    ];
+    const total = await log_1.default.aggregate([...preCountStages, { $count: "total" }]);
+    const logs = await log_1.default.aggregate([
+        ...preCountStages,
         { $sort: {
                 "_id.name": 1, "_id.message": 1
             } },
@@ -42,10 +44,11 @@ const errorView = async (queryObject, limit, page, _) => {
             }
         }
     ]);
+    return { logs, total: total[0].total };
 };
 exports.errorView = errorView;
 const sessionView = async (queryObject, limit, page, timestampOptions) => {
-    return await log_1.default.aggregate([
+    const preCountStages = [
         { $match: queryObject },
         { $group: {
                 _id: { sessionId: "$sessionId" },
@@ -64,7 +67,11 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
                         timestamp: { $dateToString: Object.assign({ date: "$timestamp" }, timestampOptions) }
                     }
                 }
-            } },
+            } }
+    ];
+    const total = await log_1.default.aggregate([...preCountStages, { $count: "total" }]);
+    const logs = await log_1.default.aggregate([
+        ...preCountStages,
         { $sort: {
                 "date": -1, "_id.sessionId": -1
             } },
@@ -78,11 +85,14 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
                 errors: 1
             } }
     ]);
+    return { logs, total: total[0].total };
 };
 exports.sessionView = sessionView;
 const atomicView = async (queryObject, limit, page, timestampOptions) => {
-    return await log_1.default.aggregate([
-        { $match: queryObject },
+    const preCountStages = [{ $match: queryObject }];
+    const total = await log_1.default.aggregate([...preCountStages, { $count: "total" }]);
+    const logs = await log_1.default.aggregate([
+        ...preCountStages,
         { $sort: { sessionId: 1, timeStamp: -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
@@ -97,5 +107,6 @@ const atomicView = async (queryObject, limit, page, timestampOptions) => {
                 actions: 1
             } }
     ]);
+    return { logs, total: total[0].total };
 };
 exports.atomicView = atomicView;
