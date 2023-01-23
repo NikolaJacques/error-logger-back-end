@@ -79,7 +79,9 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
 
 export const postLog = async (req:TypedRequest<RequestBodyInterface,any>, res:TypedResponse<{message:string,log:ErrorLogInterface}>, next: NextFunction) => {
     try {
-        const logObj:ErrorLogInterface = {...req.body, timestamp: new Date(req.body.timestamp)}
+        let logObj:ErrorLogInterface
+        const date = DateTime.fromMillis(req.body.timestamp);
+        logObj = {...req.body, timestamp: date.isValid?new Date(req.body.timestamp):new Date()};
         const log = new Log(logObj);
         await log.save();
         res.status(200).json({

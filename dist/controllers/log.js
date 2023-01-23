@@ -82,7 +82,9 @@ const getLogs = async (req, res, next) => {
 exports.getLogs = getLogs;
 const postLog = async (req, res, next) => {
     try {
-        const logObj = Object.assign(Object.assign({}, req.body), { timestamp: new Date(req.body.timestamp) });
+        let logObj;
+        const date = luxon_1.DateTime.fromMillis(req.body.timestamp);
+        logObj = Object.assign(Object.assign({}, req.body), { timestamp: date.isValid ? new Date(req.body.timestamp) : new Date() });
         const log = new log_1.default(logObj);
         await log.save();
         res.status(200).json({

@@ -52,7 +52,7 @@ export const ErrorLogger = (() => {
             throw new Error('Couldn\'t retrieve date');
         }
     };
-    const url = 'http://localhost:3000/';
+    const url = 'http://localhost:8080/';
     const cache = (error) => {
         try {
             const cachedErrors = localStorage.getItem('errorCache') ? JSON.parse(localStorage.getItem('errorCache')) : [];

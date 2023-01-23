@@ -45,7 +45,7 @@ export const ErrorLogger = (() => {
         }
     }
 
-    const url = 'http://localhost:3000/';
+    const url = 'http://localhost:8080/';
 
     const cache = (error:Error) => {
         try {
