@@ -17,7 +17,10 @@ const projectSchema = new mongoose_1.Schema({
     timestampOptions: {
         type: Object,
         required: false,
-        default: {}
+        default: {
+            format: "%d-%m-%Y",
+            timezone: "Europe/Brussels"
+        }
     },
     createdAt: {
         type: Date,

@@ -5,6 +5,7 @@ import { ErrorLogInterface } from '../models/log';
 import { errorView, atomicView, sessionView, queryObjectInterface } from '../utils/queries';
 import { TypedRequest, TypedResponse, ViewType, RequestBodyInterface, QueryInterface, TimestampOptions } from '../utils/sharedTypes';
 import Project from '../models/project';
+import { DateTime } from 'luxon';
 
 type ResponseType = {message: string, logs: any[], total:number} | {message: string};
 
@@ -12,12 +13,30 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
     try{
         const {startDate, endDate, sessionId, name, page, limit, view} = req.query;
         let queryObject:FilterQuery<typeof Log>={appId: req.params.id};
-        if(startDate && endDate){
+        const project = await Project.findById(req.params.id);
+        const timestampOptions:TimestampOptions = project!.timestampOptions;
+        let timestamp = {};
+        if(startDate){
+            const date = DateTime.fromISO(startDate);
+            if (date.isValid){
+                timestamp = {...timestamp, $gte: new Date(startDate as string)};
+            }
+        }
+        if(endDate){
+            const date = DateTime.fromISO(endDate);
+            if (date.isValid){
+                if (startDate){
+                    if (endDate > startDate){
+                        timestamp = {...timestamp, $lte: new Date(endDate as string)};
+                    }
+                } else {
+                    timestamp = {...timestamp, $lte: new Date(endDate as string)};
+                }
+            }
+        }
+        if(startDate || endDate){
             queryObject = {...queryObject,
-                timeStamp: {
-                            $gte: new Date(startDate as string), 
-                            $lte: new Date(endDate as string)
-                        }
+                timestamp
             };
         };
         if(sessionId){
@@ -26,8 +45,6 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
         if(name){
             queryObject = {...queryObject, name};
         };
-        const project = await Project.findById(req.params.id);
-        const timestampOptions:TimestampOptions = project!.timestampOptions;
         let data;
         switch(view as ViewType){
             case 'atomic':

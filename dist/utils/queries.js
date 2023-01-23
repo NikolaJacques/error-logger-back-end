@@ -85,7 +85,7 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
                 errors: 1
             } }
     ]);
-    return { logs, total: total[0].total };
+    return { logs, total: logs.length === 0 ? 0 : total[0].total };
 };
 exports.sessionView = sessionView;
 const atomicView = async (queryObject, limit, page, timestampOptions) => {

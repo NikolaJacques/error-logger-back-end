@@ -7,15 +7,35 @@ exports.deleteLogs = exports.postLog = exports.getLogs = void 0;
 const log_1 = __importDefault(require("../models/log"));
 const queries_1 = require("../utils/queries");
 const project_1 = __importDefault(require("../models/project"));
+const luxon_1 = require("luxon");
 const getLogs = async (req, res, next) => {
     try {
         const { startDate, endDate, sessionId, name, page, limit, view } = req.query;
         let queryObject = { appId: req.params.id };
-        if (startDate && endDate) {
-            queryObject = Object.assign(Object.assign({}, queryObject), { timeStamp: {
-                    $gte: new Date(startDate),
-                    $lte: new Date(endDate)
-                } });
+        const project = await project_1.default.findById(req.params.id);
+        const timestampOptions = project.timestampOptions;
+        let timestamp = {};
+        if (startDate) {
+            const date = luxon_1.DateTime.fromISO(startDate);
+            if (date.isValid) {
+                timestamp = Object.assign(Object.assign({}, timestamp), { $gte: new Date(startDate) });
+            }
+        }
+        if (endDate) {
+            const date = luxon_1.DateTime.fromISO(endDate);
+            if (date.isValid) {
+                if (startDate) {
+                    if (endDate > startDate) {
+                        timestamp = Object.assign(Object.assign({}, timestamp), { $lte: new Date(endDate) });
+                    }
+                }
+                else {
+                    timestamp = Object.assign(Object.assign({}, timestamp), { $lte: new Date(endDate) });
+                }
+            }
+        }
+        if (startDate || endDate) {
+            queryObject = Object.assign(Object.assign({}, queryObject), { timestamp });
         }
         ;
         if (sessionId) {
@@ -26,8 +46,6 @@ const getLogs = async (req, res, next) => {
             queryObject = Object.assign(Object.assign({}, queryObject), { name });
         }
         ;
-        const project = await project_1.default.findById(req.params.id);
-        const timestampOptions = project.timestampOptions;
         let data;
         switch (view) {
             case 'atomic':
