@@ -46,19 +46,21 @@ const getLogs = async (req, res, next) => {
             queryObject = Object.assign(Object.assign({}, queryObject), { name });
         }
         ;
+        let limitParam = Number.isInteger(parseInt(limit)) ? parseInt(limit) : 10;
+        let pageParam = Number.isInteger(parseInt(page)) ? parseInt(page) : 1;
         let data;
         switch (view) {
             case 'atomic':
-                data = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.atomicView)({}, limitParam, pageParam, timestampOptions);
                 break;
             case 'session':
-                data = await (0, queries_1.sessionView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.sessionView)(queryObject, limitParam, pageParam, timestampOptions);
                 break;
             case 'error':
-                data = await (0, queries_1.errorView)(queryObject, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.errorView)(queryObject, limitParam, pageParam, timestampOptions);
                 break;
             default:
-                data = await (0, queries_1.atomicView)({}, parseInt(limit), parseInt(page), timestampOptions);
+                data = await (0, queries_1.atomicView)({}, limitParam, pageParam, timestampOptions);
         }
         ;
         if (data.total === 0) {

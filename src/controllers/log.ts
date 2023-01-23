@@ -45,19 +45,21 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
         if(name){
             queryObject = {...queryObject, name};
         };
+        let limitParam = Number.isInteger(parseInt(limit as string))?parseInt(limit as string):10;
+        let pageParam = Number.isInteger(parseInt(page as string))?parseInt(page as string):1;
         let data;
         switch(view as ViewType){
             case 'atomic':
-                data = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await atomicView({}, limitParam, pageParam, timestampOptions);
                 break;
             case 'session':
-                data = await sessionView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await sessionView(queryObject as Partial<queryObjectInterface>, limitParam, pageParam, timestampOptions);
                 break;
             case 'error':
-                data = await errorView(queryObject as Partial<queryObjectInterface>, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await errorView(queryObject as Partial<queryObjectInterface>, limitParam, pageParam, timestampOptions);
                 break;
             default:
-                data = await atomicView({}, parseInt(limit as string), parseInt(page as string), timestampOptions);
+                data = await atomicView({}, limitParam, pageParam, timestampOptions);
         };
         if(data.total===0){
             return res.status(404).json({
