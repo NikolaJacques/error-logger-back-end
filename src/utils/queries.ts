@@ -46,7 +46,7 @@ export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:
           }
         }
     ]);
-    return {logs, total:total[0].total};
+    return {logs, total:logs.length===0?0:total[0].total};
 };
 
 export const sessionView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
@@ -117,5 +117,5 @@ export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit
             actions: 1
         }}
     ]);
-    return {logs, total:total[0].total};
+    return {logs, total:logs.length===0?0:total[0].total};
 };

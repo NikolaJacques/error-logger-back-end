@@ -44,7 +44,7 @@ const errorView = async (queryObject, limit, page, _) => {
             }
         }
     ]);
-    return { logs, total: total[0].total };
+    return { logs, total: logs.length === 0 ? 0 : total[0].total };
 };
 exports.errorView = errorView;
 const sessionView = async (queryObject, limit, page, timestampOptions) => {
@@ -107,6 +107,6 @@ const atomicView = async (queryObject, limit, page, timestampOptions) => {
                 actions: 1
             } }
     ]);
-    return { logs, total: total[0].total };
+    return { logs, total: logs.length === 0 ? 0 : total[0].total };
 };
 exports.atomicView = atomicView;

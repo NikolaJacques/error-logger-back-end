@@ -8,6 +8,7 @@ const log_1 = __importDefault(require("../models/log"));
 const queries_1 = require("../utils/queries");
 const project_1 = __importDefault(require("../models/project"));
 const luxon_1 = require("luxon");
+const dateValidator_1 = require("../utils/dateValidator");
 const getLogs = async (req, res, next) => {
     try {
         const { startDate, endDate, sessionId, name, page, limit, view } = req.query;
@@ -16,14 +17,14 @@ const getLogs = async (req, res, next) => {
         const timestampOptions = project.timestampOptions;
         let timestamp = {};
         if (startDate) {
-            const date = luxon_1.DateTime.fromISO(startDate);
-            if (date.isValid) {
+            const date = (0, dateValidator_1.dateValidator)(startDate);
+            if (date) {
                 timestamp = Object.assign(Object.assign({}, timestamp), { $gte: new Date(startDate) });
             }
         }
         if (endDate) {
-            const date = luxon_1.DateTime.fromISO(endDate);
-            if (date.isValid) {
+            const date = (0, dateValidator_1.dateValidator)(endDate);
+            if (date) {
                 if (startDate) {
                     if (endDate > startDate) {
                         timestamp = Object.assign(Object.assign({}, timestamp), { $lte: new Date(endDate) });
@@ -51,7 +52,7 @@ const getLogs = async (req, res, next) => {
         let data;
         switch (view) {
             case 'atomic':
-                data = await (0, queries_1.atomicView)({}, limitParam, pageParam, timestampOptions);
+                data = await (0, queries_1.atomicView)(queryObject, limitParam, pageParam, timestampOptions);
                 break;
             case 'session':
                 data = await (0, queries_1.sessionView)(queryObject, limitParam, pageParam, timestampOptions);
@@ -60,7 +61,7 @@ const getLogs = async (req, res, next) => {
                 data = await (0, queries_1.errorView)(queryObject, limitParam, pageParam, timestampOptions);
                 break;
             default:
-                data = await (0, queries_1.atomicView)({}, limitParam, pageParam, timestampOptions);
+                data = await (0, queries_1.atomicView)(queryObject, limitParam, pageParam, timestampOptions);
         }
         ;
         if (data.total === 0) {

@@ -8,6 +8,7 @@ import { QueryInterface, ViewType } from 'frontend-backend';
 import { TypedRequest, TypedResponse, RequestBodyInterface } from 'delivery-backend';
 import Project from '../models/project';
 import { DateTime } from 'luxon';
+import { dateValidator } from '../utils/dateValidator';
 
 type ResponseType = {message: string, logs: any[], total:number} | {message: string};
 
@@ -19,14 +20,14 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
         const timestampOptions:TimestampOptions = project!.timestampOptions;
         let timestamp = {};
         if(startDate){
-            const date = DateTime.fromISO(startDate);
-            if (date.isValid){
+            const date = dateValidator(startDate); 
+            if (date){
                 timestamp = {...timestamp, $gte: new Date(startDate as string)};
             }
         }
         if(endDate){
-            const date = DateTime.fromISO(endDate);
-            if (date.isValid){
+            const date = dateValidator(endDate);
+            if (date){
                 if (startDate){
                     if (endDate > startDate){
                         timestamp = {...timestamp, $lte: new Date(endDate as string)};
@@ -52,7 +53,7 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
         let data;
         switch(view as ViewType){
             case 'atomic':
-                data = await atomicView({}, limitParam, pageParam, timestampOptions);
+                data = await atomicView(queryObject as Partial<queryObjectInterface>, limitParam, pageParam, timestampOptions);
                 break;
             case 'session':
                 data = await sessionView(queryObject as Partial<queryObjectInterface>, limitParam, pageParam, timestampOptions);
@@ -61,7 +62,7 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
                 data = await errorView(queryObject as Partial<queryObjectInterface>, limitParam, pageParam, timestampOptions);
                 break;
             default:
-                data = await atomicView({}, limitParam, pageParam, timestampOptions);
+                data = await atomicView(queryObject as Partial<queryObjectInterface>, limitParam, pageParam, timestampOptions);
         };
         if(data.total===0){
             return res.status(404).json({
