@@ -1,5 +1,5 @@
 import { NextFunction } from 'express';
-import { RequestBodyInterface, ErrorResponseType, TypedRequest, TypedResponse } from '../utils/sharedTypes';
+import { RequestBodyInterface, ErrorResponseType, TypedRequest, TypedResponse } from 'delivery-backend';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/env';

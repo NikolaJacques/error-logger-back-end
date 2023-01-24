@@ -1,4 +1,4 @@
-import {ErrorReportInterface, AuthResponse, AuthRequest, TimestampOptions} from '../../utils/sharedTypes';
+import { ErrorReportInterface, AuthResponse, AuthRequest } from 'delivery-backend';
 
 export const ErrorLogger = (() => {
 

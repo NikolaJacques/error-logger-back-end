@@ -1,5 +1,6 @@
 import { NextFunction } from 'express';
-import { AuthResponse, AuthRequest, AdminAuthRequest, ErrorResponseType, TypedRequest, TypedResponse } from '../utils/sharedTypes';
+import { AdminAuthRequest } from 'frontend-backend';
+import { AuthResponse, AuthRequest, TypedRequest, TypedResponse, ErrorResponseType } from 'delivery-backend';
 import Project from '../models/project';
 import User from '../models/user';
 import { v4 as uuid } from 'uuid';

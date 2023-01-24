@@ -1,5 +1,5 @@
 import Log from '../models/log';
-import { TimestampOptions } from './sharedTypes';
+import { TimestampOptions } from 'intersection';
 
 export interface queryObjectInterface {
     startDate: Date, 

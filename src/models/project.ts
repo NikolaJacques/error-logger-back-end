@@ -1,5 +1,5 @@
 import { Schema, model, ObjectId } from 'mongoose';
-import { TimestampOptions } from '../utils/sharedTypes';
+import { TimestampOptions } from 'intersection';
 
 export interface ProjectInterface {
     name: string,

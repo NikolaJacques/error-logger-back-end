@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Schema } from 'mongoose';
 import Project from '../models/project';
-import { ErrorResponseType } from '../utils/sharedTypes';
+import { ErrorResponseType } from 'delivery-backend';
 import { ProjectRequest } from 'frontend-backend';
 import User from '../models/user';
 

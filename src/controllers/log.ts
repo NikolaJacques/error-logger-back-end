@@ -3,7 +3,9 @@ import { NextFunction, RequestHandler } from 'express';
 import Log from '../models/log';
 import { ErrorLogInterface } from '../models/log';
 import { errorView, atomicView, sessionView, queryObjectInterface } from '../utils/queries';
-import { TypedRequest, TypedResponse, ViewType, RequestBodyInterface, QueryInterface, TimestampOptions } from '../utils/sharedTypes';
+import { TimestampOptions } from 'intersection';
+import { QueryInterface, ViewType } from 'frontend-backend';
+import { TypedRequest, TypedResponse, RequestBodyInterface } from 'delivery-backend';
 import Project from '../models/project';
 import { DateTime } from 'luxon';
 

@@ -1,6 +1,6 @@
-import { TypedRequest, TypedResponse, AdminAuthRequest } from '../utils/sharedTypes';
+import { AdminAuthRequest } from 'frontend-backend';
 import { NextFunction } from 'express';
-import { ErrorResponseType } from '../utils/sharedTypes';
+import { TypedRequest, TypedResponse, ErrorResponseType } from 'delivery-backend';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import { JWT_ADMIN_SECRET } from '../utils/env';
