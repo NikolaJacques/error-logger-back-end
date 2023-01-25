@@ -6,7 +6,6 @@
   "scripts": {
     "start": "nodemon dist/app.js",
     "build": "tsc --project tsconfig.json -w",
-    "build-static": "tsc --project tsconfig.static.json -w",
     "test": "jest -c ./jest.config.json",
     "test:coverage": "jest --coverage -c ./jest.config.json"
   },
