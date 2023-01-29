@@ -1,5 +1,6 @@
 import Log from '../models/log';
 import { TimestampOptions } from 'intersection';
+import * as _ from 'lodash';
 
 export interface queryObjectInterface {
     startDate: Date, 
@@ -8,15 +9,19 @@ export interface queryObjectInterface {
     name: string
 }
 
-export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _:TimestampOptions) => {
+export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _1:TimestampOptions) => {
     const preCountStages = [
         {$match: queryObject},
         {$group: {
             _id: {
                 name: "$name",
                 message: "$message",
-                stackTrace: "$stackTrace",
+                stackTrace: {$concat: [
+                    {$arrayElemAt: [{$split: ["$stackTrace", "at"]}, 0]}, 
+                    {$arrayElemAt: [{$split: ["$stackTrace", "at"]}, 1]}
+                ]},
             },
+            stacks:{ $addToSet: "$stackTrace"},
             totalErrors: {
                 $sum: 1
             },
@@ -39,14 +44,22 @@ export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:
             _id: 0,
             name: "$_id.name",
             message: "$_id.message",
-            stack: "$_id.stackTrace",
+            stack: "$stacks",
             totalSessions: {$size: "$sessions"},
             totalErrors: 1,
             browserVersion: 1
           }
         }
-    ]);
-    return {logs, total:logs.length===0?0:total[0].total};
+    ]);    
+    const stackFilter = (array:Array<string>) => {
+        const arr:Array<string[]> = [];
+        for (let item of array){
+            arr.push(item.split('at'));
+        }
+        return _.intersection(...arr).join('at');
+    }
+    const aggregatedLogs = logs.map(log => ({...log, stack: stackFilter(log.stack)}));
+    return {logs:aggregatedLogs, total:logs.length===0?0:total[0].total};
 };
 
 export const sessionView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
