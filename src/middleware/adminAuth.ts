@@ -15,7 +15,7 @@ export const adminAuth = (req:TypedRequest<AdminAuthRequest,any>, _:TypedRespons
     }
     catch(_){
         const error = new Error() as ErrorResponseType;
-        error.message = 'Could not authenticate; request failed.'; 
+        error.message = 'Could not authenticate; request failed.';
         error.statusCode = 401;
         next(error);
     }
