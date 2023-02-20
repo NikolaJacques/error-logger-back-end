@@ -113,7 +113,7 @@ export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit
     const total = await Log.aggregate([...preCountStages, {$count:"total"}]); 
     const logs = await Log.aggregate([
         ...preCountStages,
-        {$sort: { sessionId: 1, timeStamp:-1}},
+        {$sort: { timestamp:-1, sessionId: 1}},
         {$skip: (page-1)*limit},
         {$limit: limit},
         {$project: {

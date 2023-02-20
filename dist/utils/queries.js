@@ -129,7 +129,7 @@ const atomicView = async (queryObject, limit, page, timestampOptions) => {
     const total = await log_1.default.aggregate([...preCountStages, { $count: "total" }]);
     const logs = await log_1.default.aggregate([
         ...preCountStages,
-        { $sort: { sessionId: 1, timeStamp: -1 } },
+        { $sort: { timestamp: -1, sessionId: 1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
         { $project: {

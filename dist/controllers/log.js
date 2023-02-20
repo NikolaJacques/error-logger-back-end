@@ -64,6 +64,7 @@ const getLogs = async (req, res, next) => {
                 data = await (0, queries_1.atomicView)(queryObject, limitParam, pageParam, timestampOptions);
         }
         ;
+        console.log(data);
         if (data.total === 0) {
             return res.status(404).json({
                 message: 'No logs found.'
