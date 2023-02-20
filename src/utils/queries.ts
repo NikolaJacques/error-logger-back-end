@@ -125,7 +125,7 @@ export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit
             }},
             name:1,
             message:1,
-            stackTrace:1,
+            stack:1,
             browserVersion:1,
             actions: 1
         }}

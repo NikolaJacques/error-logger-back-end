@@ -138,7 +138,7 @@ const atomicView = async (queryObject, limit, page, timestampOptions) => {
                 timestamp: { $dateToString: Object.assign({ date: "$timestamp" }, timestampOptions) },
                 name: 1,
                 message: 1,
-                stackTrace: 1,
+                stack: 1,
                 browserVersion: 1,
                 actions: 1
             } }
