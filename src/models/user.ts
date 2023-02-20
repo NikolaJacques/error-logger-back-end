@@ -1,4 +1,4 @@
-import { Schema, model, ObjectId } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 import {Role} from 'frontend-backend';
 
 export interface UserInterface {
@@ -6,7 +6,7 @@ export interface UserInterface {
     password: string,
     email: string,
     role: Role,
-    projects: ObjectId[]
+    projects: Types.ObjectId[]
 }
 
 const userSchema = new Schema<UserInterface>({

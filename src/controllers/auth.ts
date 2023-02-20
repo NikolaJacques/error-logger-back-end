@@ -5,7 +5,7 @@ import Project from '../models/project';
 import User from '../models/user';
 import { v4 as uuid } from 'uuid';
 import * as jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../utils/env';
+import { JWT_ADMIN_SECRET, JWT_SECRET } from '../utils/env';
 import * as bcrypt from 'bcryptjs';
 
 export const authenticate = async (req:TypedRequest<AuthRequest,any>, res:TypedResponse<AuthResponse>, next:NextFunction) => {
@@ -56,7 +56,7 @@ export const login = async (req:TypedRequest<AdminAuthRequest,any>, res:TypedRes
         }
         const token = jwt.sign({
             userId: user._id
-        }, JWT_SECRET ?? '', {expiresIn: '1h'});
+        }, JWT_ADMIN_SECRET ?? '', {expiresIn: '1h'});
         res.status(200).json({
             message: 'Login successful.',
             token
