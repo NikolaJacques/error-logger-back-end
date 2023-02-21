@@ -64,7 +64,6 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
             default:
                 data = await atomicView(queryObject as Partial<queryObjectInterface>, limitParam, pageParam, timestampOptions);
         };
-        console.log(data);
         if(data.total===0){
             return res.status(404).json({
                 message: 'No logs found.'
