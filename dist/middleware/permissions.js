@@ -42,7 +42,7 @@ const permissions = async (req, _, next) => {
         if (!user.projects.includes(new Mongoose.Types.ObjectId(req.params.id))) {
             const err = new Error();
             err.message = 'User not authorized to access requested resource.';
-            err.statusCode = 401;
+            err.statusCode = 403;
             throw err;
         }
         next();

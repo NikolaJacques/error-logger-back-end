@@ -17,7 +17,7 @@ export const permissions = async (req: TypedRequest<AdminAuthRequest,any>, _:Typ
         if (!user.projects.includes(new Mongoose.Types.ObjectId(req.params.id))){
             const err = new Error() as ErrorResponseType;
             err.message = 'User not authorized to access requested resource.'; 
-            err.statusCode = 401;
+            err.statusCode = 403;
             throw err;
         }
         next();

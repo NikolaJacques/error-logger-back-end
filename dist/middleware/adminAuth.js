@@ -37,7 +37,7 @@ const adminAuth = (req, _, next) => {
     catch (_) {
         const error = new Error();
         error.message = 'Could not authenticate; request failed.';
-        error.statusCode = 403;
+        error.statusCode = 401;
         next(error);
     }
 };

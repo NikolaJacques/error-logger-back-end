@@ -76,7 +76,7 @@ const login = async (req, res, next) => {
         if (!passwordOk) {
             const err = new Error();
             err.message = 'Authentication unsuccessful; wrong credentials.';
-            err.statusCode = 403;
+            err.statusCode = 401;
             throw err;
         }
         const token = jwt.sign({

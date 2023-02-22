@@ -51,7 +51,7 @@ export const login = async (req:TypedRequest<AdminAuthRequest,any>, res:TypedRes
         if (!passwordOk){
                 const err = new Error() as ErrorResponseType;
                 err.message = 'Authentication unsuccessful; wrong credentials.'; 
-                err.statusCode = 403;
+                err.statusCode = 401;
                 throw err;
         }
         const token = jwt.sign({
