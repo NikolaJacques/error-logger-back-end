@@ -8,6 +8,7 @@ import path from 'path';
 import Project from './models/project';
 import User from './models/user';
 import { MONGO_URI } from './utils/env';
+import { changeStreamHandler } from './utils/changeStream';
 
 const app:Express = express();
 app.use(bodyparser.json());
@@ -35,6 +36,8 @@ app.use((err: Error & {message: string, statusCode: number}, _: Request, res: Re
 mongoose.connect(MONGO_URI ?? '')
     .then(() => console.log('DB Connection successful'))
     .catch(err => console.log(err));
+
+changeStreamHandler();
 
 (async () => {
     try {

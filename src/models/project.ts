@@ -1,5 +1,6 @@
-import { Schema, model, ObjectId } from 'mongoose';
+import { Schema, model, ObjectId, PopulatedDoc, Document, Types } from 'mongoose';
 import { TimestampOptions } from 'intersection';
+import Event from './event';
 
 export interface ProjectInterface {
     name: string,
@@ -8,7 +9,8 @@ export interface ProjectInterface {
     user: ObjectId,
     timestampOptions: TimestampOptions,
     createdAt: Date,
-    active: boolean
+    active: boolean,
+    events: ObjectId
 }
 
 const projectSchema = new Schema<ProjectInterface>({
@@ -41,7 +43,11 @@ const projectSchema = new Schema<ProjectInterface>({
         type: Boolean,
         required: true,
         default: true
-    }
+    },
+    events: [{
+        type: Schema.Types.ObjectId,
+        ref: Event
+    }]
 })
 
 const Project = model<ProjectInterface>('Project', projectSchema);

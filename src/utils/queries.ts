@@ -6,7 +6,8 @@ export interface queryObjectInterface {
     startDate: Date, 
     endDate: Date, 
     sessionId: string, 
-    name: string
+    name: string,
+    stack: string
 }
 
 export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _1:TimestampOptions) => {

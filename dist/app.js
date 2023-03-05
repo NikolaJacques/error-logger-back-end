@@ -36,6 +36,7 @@ const path_1 = __importDefault(require("path"));
 const project_1 = __importDefault(require("./models/project"));
 const user_1 = __importDefault(require("./models/user"));
 const env_1 = require("./utils/env");
+const changeStream_1 = require("./utils/changeStream");
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.use((_, res, next) => {
@@ -57,6 +58,7 @@ app.use((err, _, res, _2) => {
 mongoose.connect(env_1.MONGO_URI !== null && env_1.MONGO_URI !== void 0 ? env_1.MONGO_URI : '')
     .then(() => console.log('DB Connection successful'))
     .catch(err => console.log(err));
+(0, changeStream_1.changeStreamHandler)();
 (async () => {
     try {
         const project = await project_1.default.findById('635d4399854b53aa6a6a4f0a');
