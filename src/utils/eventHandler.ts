@@ -12,10 +12,11 @@ export const eventHandler = async (event: any, payload: any) => {
             await delay(backoffCoefficient);
             response = await fetch();
         }
-        const newLog = await WebhookLog.create({eventId: event._id, status: response!.status, payload});
-        await newLog.save();
+        const newLog = await WebhookLog.create({eventId: event._doc._id?event._doc._id:null, status: response.status?response.status:null, payload:payload?payload:null});
+        await newLog.save();    
     } catch(err:any) {
-        const newLog = await WebhookLog.create({eventId: event._id, status: err.response.status, payload});
+        console.log(err);
+        const newLog = await WebhookLog.create({eventId: event._doc._id?event._doc._id:null, status: err.response.status?err.response.status:null, payload:payload?payload:null});
         await newLog.save();
     }
 }
