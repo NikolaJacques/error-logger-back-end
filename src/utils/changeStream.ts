@@ -3,10 +3,12 @@ import { MONGO_URI } from './env';
 import Log from '../models/log';
 import Project from '../models/project';
 import { eventHandler } from './eventHandler';
-import Event, { EventInterface } from '../models/event';
+import { EventInterface } from '../models/event';
 import { ErrorLogInterface } from 'frontend-backend';
 
 export type EventType = 'newLog'; // update as union type as required
+
+export interface EventHandlerEventInterface {_doc: EventInterface & {_id:string}};
 
 const pipeline = [{$match: {"operationType": "insert"}}];
 
@@ -41,7 +43,7 @@ export const changeStreamHandler = async () => {
             events.push('newLog');
             // check if app subscribed to events
             const project = await Project.findOne({_id: next.fullDocument.appId}).populate<{events: any[]}>('events');
-            let subscribedEvents: EventInterface[] = [];
+            let subscribedEvents: EventHandlerEventInterface[] = [];
             events.forEach(eventString => {
               let filteredEvents = project!.events.filter(event => {
                 return event._doc.type === eventString;
