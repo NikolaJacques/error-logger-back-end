@@ -8,7 +8,7 @@ import { ErrorLogInterface } from 'frontend-backend';
 import { ProjectInterface } from '../models/project';
 import { PopulatedDoc } from 'mongoose';
 
-export type EventType = 'newLog'; // expand as union type as new event are added
+export type EventType = 'newLog'; // expand as union type as new events are added
 
 export interface EventHandlerEventInterface {_doc: EventInterface & {_id:string}};
 type ResumeTokenType = ChangeStreamInsertDocument & {_id: {_data: string}};
@@ -26,7 +26,6 @@ export const changeStreamHandler = async () => {
         await client.db('errors').collection('token').findOneAndUpdate({_id: 'resume_token'},{$set:{token: resumeToken}},{upsert:true});
         const eventsPipe = asyncPipe(checkForNewError/*insert other functions here for checking and adding events to events queue*/);
         const [_, events] = await eventsPipe(next,[] as EventType[]);
-        console.log(events);
         // check if app subscribed to events
         const project = await Project.findOne({_id: next.fullDocument.appId}).populate<{events: any[]}>('events');
         const filteredEvents = subscribedEvents(project, events);
@@ -39,9 +38,9 @@ export const changeStreamHandler = async () => {
     }
   }
 
-const asyncPipe = (...functions: any[]) => (next:any,events:any[]) => functions.reduce((chain, func) => chain.then(func), Promise.resolve([next,events]));
+const asyncPipe = (...functions: any[]) => (next:ChangeStreamInsertDocument,events:EventType[]) => functions.reduce((chain, func) => chain.then(func), Promise.resolve([next,events]));
 
-const checkForNewError = async (...args:any[]):Promise<[ChangeStreamInsertDocument & {_id: {_data: string}},EventType[]]> => {
+const checkForNewError = async (args:any[]):Promise<[ChangeStreamInsertDocument,EventType[]]> => {
   const next = args[0];
   const events = args[1];
   const searchExpression = next.fullDocument.stack.split('at')[0] + next.fullDocument.stack.split('at')[1];
