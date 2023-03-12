@@ -1,7 +1,8 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 import { EventType } from '../utils/changeStream';
 
-export interface EventInterface {
+export interface EventInterface extends Document {
+    _doc: any,
     type: EventType
     endPointUrl: string
 }

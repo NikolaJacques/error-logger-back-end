@@ -2,7 +2,8 @@ import { Schema, model, ObjectId, PopulatedDoc, Document, Types } from 'mongoose
 import { TimestampOptions } from 'intersection';
 import Event from './event';
 
-export interface ProjectInterface {
+export interface ProjectInterface extends Document {
+    _doc: any,
     name: string,
     secret: string,
     description: string,
@@ -10,7 +11,7 @@ export interface ProjectInterface {
     timestampOptions: TimestampOptions,
     createdAt: Date,
     active: boolean,
-    events: ObjectId
+    events: PopulatedDoc<Document<ObjectId> & Event>[]
 }
 
 const projectSchema = new Schema<ProjectInterface>({
