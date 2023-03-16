@@ -1,10 +1,11 @@
 import { NextFunction } from 'express';
-import { RequestBodyInterface, ErrorResponseType, TypedRequest, TypedResponse } from 'delivery-backend';
+import { ExtendedErrorLogType } from 'intersection';
+import { ErrorResponseType, TypedRequest, TypedResponse } from 'delivery-backend';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/env';
 
-export const appAuth = (req: TypedRequest<RequestBodyInterface,any>, _:TypedResponse<any>, next:NextFunction) => {
+export const appAuth = (req: TypedRequest<ExtendedErrorLogType<number>,any>, _:TypedResponse<any>, next:NextFunction) => {
     try {
         const token = req.get('Authorization')!.split(' ')[1];
         const decodedToken = jwt.verify(token, JWT_SECRET ?? '');

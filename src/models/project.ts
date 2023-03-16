@@ -1,4 +1,4 @@
-import { Schema, model, ObjectId, PopulatedDoc, Document, Types } from 'mongoose';
+import { Schema, model, ObjectId, PopulatedDoc, Document } from 'mongoose';
 import { TimestampOptions } from 'intersection';
 import Event from './event';
 

@@ -5,7 +5,8 @@ import { ErrorLogInterface } from '../models/log';
 import { errorView, atomicView, sessionView, queryObjectInterface } from '../utils/queries';
 import { TimestampOptions } from 'intersection';
 import { QueryInterface, ViewType } from 'frontend-backend';
-import { TypedRequest, TypedResponse, RequestBodyInterface } from 'delivery-backend';
+import { ExtendedErrorLogType } from 'intersection';
+import { TypedRequest, TypedResponse } from 'delivery-backend';
 import Project from '../models/project';
 import { DateTime } from 'luxon';
 import { dateValidator } from '../utils/dateValidator';
@@ -80,7 +81,7 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
     }
 };
 
-export const postLog = async (req:TypedRequest<RequestBodyInterface,any>, res:TypedResponse<{message:string,log:ErrorLogInterface}>, next: NextFunction) => {
+export const postLog = async (req:TypedRequest<ExtendedErrorLogType<number>,any>, res:TypedResponse<{message:string,log:ErrorLogInterface}>, next: NextFunction) => {
     try {
         let logObj:ErrorLogInterface
         const date = DateTime.fromMillis(req.body.timestamp);

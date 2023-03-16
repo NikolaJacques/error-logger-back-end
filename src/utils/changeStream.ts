@@ -4,7 +4,7 @@ import Log from '../models/log';
 import Project from '../models/project';
 import { eventHandler } from './eventHandler';
 import { EventInterface } from '../models/event';
-import { ErrorLogInterface } from 'frontend-backend';
+import { ExtendedErrorLogType } from 'intersection';
 import { ProjectInterface } from '../models/project';
 import { PopulatedDoc } from 'mongoose';
 
@@ -76,6 +76,6 @@ const subscribedEvents = (project: PopulatedDoc<ProjectInterface>, events: Event
 
 const callEvents = async (next: ChangeStreamInsertDocument, subscribedEvents: EventInterface[]) => {
   if (subscribedEvents.length>0){
-    subscribedEvents.forEach(async (event) => await eventHandler(event, next.fullDocument as ErrorLogInterface));
+    subscribedEvents.forEach(async (event) => await eventHandler(event, next.fullDocument as ExtendedErrorLogType<Date>));
   }
 }
