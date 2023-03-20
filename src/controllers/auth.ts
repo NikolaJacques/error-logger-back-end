@@ -20,7 +20,7 @@ export const authenticate = async (req:TypedRequest<AuthRequest,any>, res:TypedR
         if (req.body.appSecret!==project.secret){
                 const err = new Error() as ErrorResponseType;
                 err.message = 'Authentication unsuccessful; wrong credentials.';
-                err.statusCode = 403;
+                err.statusCode = 401;
                 throw err;
         }
         const sessionId = uuid();
