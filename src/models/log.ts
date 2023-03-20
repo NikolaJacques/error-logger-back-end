@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { ActionType } from 'intersection'; 
 
 export interface ErrorLogInterface {
     appId: string,
@@ -6,7 +7,7 @@ export interface ErrorLogInterface {
     message: string,
     name: string,
     stack: string,
-    actions: object[],
+    actions: ActionType[],
     browserVersion: string,
     timestamp: Date
 }
