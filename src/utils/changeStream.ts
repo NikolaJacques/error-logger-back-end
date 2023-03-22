@@ -24,7 +24,6 @@ export const changeStreamHandler = async () => {
       changeStream.on('change', async (next:ChangeStreamInsertDocument) => {
         const resumeToken = (next as ResumeTokenType)._id;
         await client.db('errors').collection('token').findOneAndUpdate({_id: 'resume_token'},{$set:{token: resumeToken}},{upsert:true});
-        const eventsPipe = asyncPipe(checkForNewError/*insert other functions here for checking and adding events to events queue*/);
         const [_, events] = await eventsPipe([next,[] as EventType[]]);
         // check if app subscribed to events
         const project = await Project.findOne({_id: next.fullDocument.appId}).populate<{events: any[]}>('events');
@@ -63,6 +62,8 @@ const checkForNewError = async ([next,events]:asyncInputOutput):Promise<asyncInp
   }
   return [next, events];
 }
+
+const eventsPipe = asyncPipe(checkForNewError/*insert other functions here for checking and adding events to events queue*/);
 
 const subscribedEvents = (project: PopulatedDoc<ProjectInterface>, events: EventType[]): EventInterface[] => {
   let filteredEvents = project!.events.filter((event:EventInterface) => {
