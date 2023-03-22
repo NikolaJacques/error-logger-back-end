@@ -64,15 +64,11 @@ const checkForNewError = async ([next,events]:asyncInputOutput):Promise<asyncInp
   return [next, events];
 }
 
-const subscribedEvents = (project: PopulatedDoc<ProjectInterface>, events: EventType[]) => {
-  let result:EventInterface[] = [];
-  events.forEach((eventString: EventType) => {
-    let filteredEvents = project!.events.filter((event:EventInterface) => {
-      return event!._doc.type === eventString;
-    });
-    result = [...filteredEvents, ...result];
-  })
-  return [...result];
+const subscribedEvents = (project: PopulatedDoc<ProjectInterface>, events: EventType[]): EventInterface[] => {
+  let filteredEvents = project!.events.filter((event:EventInterface) => {
+      return events.includes(event.type);
+  });
+  return filteredEvents;
 }
 
 const callEvents = async (next: ChangeStreamInsertDocument, subscribedEvents: EventInterface[]) => {
