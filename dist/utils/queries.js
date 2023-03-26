@@ -54,13 +54,16 @@ const errorView = async (queryObject, limit, page, _1) => {
             } }
     ];
     const total = await log_1.default.aggregate([...preCountStages, { $count: "total" }]);
+    const limitPageStage = [
+        { $skip: page && limit ? (page - 1) * (limit ? limit : total[0].total) : 0 },
+        { $limit: limit ? limit : total[0].total }
+    ];
     const logs = await log_1.default.aggregate([
         ...preCountStages,
         { $sort: {
                 "_id.name": 1, "_id.message": 1
             } },
-        { $skip: (page - 1) * limit },
-        { $limit: limit },
+        ...limitPageStage,
         { $project: {
                 _id: 0,
                 name: "$_id.name",
@@ -106,13 +109,16 @@ const sessionView = async (queryObject, limit, page, timestampOptions) => {
             } }
     ];
     const total = await log_1.default.aggregate([...preCountStages, { $count: "total" }]);
+    const limitPageStage = [
+        { $skip: page && limit ? (page - 1) * (limit ? limit : total[0].total) : 0 },
+        { $limit: limit ? limit : total[0].total }
+    ];
     const logs = await log_1.default.aggregate([
         ...preCountStages,
         { $sort: {
                 "date": -1, "_id.sessionId": -1
             } },
-        { $skip: (page - 1) * limit },
-        { $limit: limit },
+        ...limitPageStage,
         { $project: {
                 _id: 0,
                 sessionId: "$_id.sessionId",
@@ -127,11 +133,14 @@ exports.sessionView = sessionView;
 const atomicView = async (queryObject, limit, page, timestampOptions) => {
     const preCountStages = [{ $match: queryObject }];
     const total = await log_1.default.aggregate([...preCountStages, { $count: "total" }]);
+    const limitPageStage = [
+        { $skip: page && limit ? (page - 1) * (limit ? limit : total[0].total) : 0 },
+        { $limit: limit ? limit : total[0].total }
+    ];
     const logs = await log_1.default.aggregate([
         ...preCountStages,
         { $sort: { timestamp: -1, sessionId: 1 } },
-        { $skip: (page - 1) * limit },
-        { $limit: limit },
+        ...limitPageStage,
         { $project: {
                 _id: 0,
                 sessionId: 1,

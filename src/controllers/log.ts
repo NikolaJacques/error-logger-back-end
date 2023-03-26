@@ -49,8 +49,8 @@ export const getLogs = async (req: TypedRequest<any,Partial<QueryInterface>>, re
         if(name){
             queryObject = {...queryObject, name};
         };
-        let limitParam = Number.isInteger(parseInt(limit as string))?parseInt(limit as string):10;
-        let pageParam = Number.isInteger(parseInt(page as string))?parseInt(page as string):1;
+        let limitParam = Number.isInteger(parseInt(limit as string))?parseInt(limit as string):null;
+        let pageParam = Number.isInteger(parseInt(page as string))?parseInt(page as string):null;
         let data;
         switch(view as ViewType){
             case 'atomic':

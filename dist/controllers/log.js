@@ -47,8 +47,8 @@ const getLogs = async (req, res, next) => {
             queryObject = Object.assign(Object.assign({}, queryObject), { name });
         }
         ;
-        let limitParam = Number.isInteger(parseInt(limit)) ? parseInt(limit) : 10;
-        let pageParam = Number.isInteger(parseInt(page)) ? parseInt(page) : 1;
+        let limitParam = Number.isInteger(parseInt(limit)) ? parseInt(limit) : null;
+        let pageParam = Number.isInteger(parseInt(page)) ? parseInt(page) : null;
         let data;
         switch (view) {
             case 'atomic':

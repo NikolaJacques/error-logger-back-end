@@ -1,6 +1,7 @@
 import Log from '../models/log';
 import { TimestampOptions } from 'intersection';
 import * as _ from 'lodash';
+import { PipelineStage } from 'mongoose';
 
 export interface queryObjectInterface {
     startDate: Date, 
@@ -10,7 +11,7 @@ export interface queryObjectInterface {
     stack: string
 }
 
-export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, _1:TimestampOptions) => {
+export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:number|null, page:number|null, _1:TimestampOptions) => {
     const preCountStages = [
         {$match: queryObject},
         {$group: {
@@ -33,14 +34,17 @@ export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:
                 $addToSet: "$sessionId",
             },
         }}];
-    const total = await Log.aggregate([...preCountStages, {$count:"total"}]); 
+    const total = await Log.aggregate([...preCountStages, {$count:"total"}]);
+    const limitPageStage:PipelineStage[] = [
+        {$skip: page&&limit?(page-1)*(limit?limit:total[0].total):0},
+        {$limit: limit?limit:total[0].total}
+    ] 
     const logs = await Log.aggregate([
         ...preCountStages,
         {$sort: {
             "_id.name":1, "_id.message":1
         }},
-        {$skip: (page-1)*limit},
-        {$limit: limit},
+        ...limitPageStage,
         {$project: {
             _id: 0,
             name: "$_id.name",
@@ -63,7 +67,7 @@ export const errorView = async(queryObject:Partial<queryObjectInterface>, limit:
     return {logs:aggregatedLogs, total:logs.length===0?0:total[0].total};
 };
 
-export const sessionView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
+export const sessionView = async(queryObject:Partial<queryObjectInterface>, limit:number|null, page:number|null, timestampOptions:TimestampOptions) => {
     const preCountStages = [
         {$match: queryObject},
         {$group: {
@@ -87,14 +91,17 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
                 }
             }
         }}];
-    const total = await Log.aggregate([...preCountStages, {$count:"total"}]); 
+    const total = await Log.aggregate([...preCountStages, {$count:"total"}]);
+    const limitPageStage:PipelineStage[] = [
+        {$skip: page&&limit?(page-1)*(limit?limit:total[0].total):0},
+        {$limit: limit?limit:total[0].total}
+    ]  
     const logs = await Log.aggregate([
         ...preCountStages,
         {$sort: {
             "date": -1, "_id.sessionId":-1
         }},
-        {$skip: (page-1)*limit},
-        {$limit: limit},
+        ...limitPageStage,
         {$project: {
             _id: 0,
             sessionId:"$_id.sessionId",
@@ -109,14 +116,17 @@ export const sessionView = async(queryObject:Partial<queryObjectInterface>, limi
     return {logs, total:logs.length===0?0:total[0].total};
 };
 
-export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit:number, page:number, timestampOptions:TimestampOptions) => {
+export const atomicView = async(queryObject:Partial<queryObjectInterface>, limit:number|null, page:number|null, timestampOptions:TimestampOptions) => {
     const preCountStages = [{$match: queryObject}];
-    const total = await Log.aggregate([...preCountStages, {$count:"total"}]); 
+    const total = await Log.aggregate([...preCountStages, {$count:"total"}]);
+    const limitPageStage:PipelineStage[] = [
+        {$skip: page&&limit?(page-1)*(limit?limit:total[0].total):0},
+        {$limit: limit?limit:total[0].total}
+    ] 
     const logs = await Log.aggregate([
         ...preCountStages,
         {$sort: { timestamp:-1, sessionId: 1}},
-        {$skip: (page-1)*limit},
-        {$limit: limit},
+        ...limitPageStage,
         {$project: {
             _id: 0,
             sessionId: 1,

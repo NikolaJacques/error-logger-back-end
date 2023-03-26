@@ -45,7 +45,7 @@ const authenticate = async (req, res, next) => {
         if (req.body.appSecret !== project.secret) {
             const err = new Error();
             err.message = 'Authentication unsuccessful; wrong credentials.';
-            err.statusCode = 403;
+            err.statusCode = 401;
             throw err;
         }
         const sessionId = (0, uuid_1.v4)();
