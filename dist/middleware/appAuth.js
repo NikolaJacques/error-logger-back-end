@@ -26,15 +26,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.appAuth = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const env_1 = require("../utils/env");
+const throwError_1 = require("../utils/throwError");
 const appAuth = (req, _, next) => {
     try {
         const token = req.get('Authorization').split(' ')[1];
         const decodedToken = jwt.verify(token, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
         if (!decodedToken) {
-            const err = new Error();
-            err.message = 'Could not authenticate; request failed.';
-            err.statusCode = 401;
-            throw err;
+            (0, throwError_1.throwError)('Could not authenticate; request failed.', 401);
         }
         const { appId, sessionId } = decodedToken;
         req.body.appId = appId;

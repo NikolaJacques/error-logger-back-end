@@ -1,9 +1,9 @@
 import {authenticate, login} from './auth';
-import { ErrorResponseType } from '../utils/sharedTypes';
 import mongoose from 'mongoose';
 import Project from '../models/project';
 import User, { UserInterface } from '../models/user';
-import {setup, cleanup} from '../utils/mockDB';
+import {setup, cleanup} from '../utils/mockDB.spec';
+import { ErrorResponseType } from 'delivery-backend';
 
 describe("Auth controller - authenticate", () => {
 

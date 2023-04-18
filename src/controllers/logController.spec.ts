@@ -1,9 +1,8 @@
 import { postLog } from './log';
 import Log from '../models/log';
 import mongoose from 'mongoose';
-import {setup, cleanup} from '../utils/mockDB';
-import {ErrorResponseType} from '../utils/sharedTypes';
-
+import {setup, cleanup} from '../utils/mockDB.spec';
+import { ErrorResponseType } from 'delivery-backend';
 
 describe("Log controller - post log", () => {
 

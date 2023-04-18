@@ -26,18 +26,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminAuth = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const env_1 = require("../utils/env");
+const throwError_1 = require("../utils/throwError");
 const adminAuth = (req, _, next) => {
     try {
-        const token = req.get('Authorization').split(' ')[1];
-        const decodedToken = jwt.verify(token, env_1.JWT_ADMIN_SECRET !== null && env_1.JWT_ADMIN_SECRET !== void 0 ? env_1.JWT_ADMIN_SECRET : '');
-        const { userId } = decodedToken;
-        req.body.userId = userId;
-        next();
+        try {
+            const token = req.get('Authorization').split(' ')[1];
+            const decodedToken = jwt.verify(token, env_1.JWT_ADMIN_SECRET !== null && env_1.JWT_ADMIN_SECRET !== void 0 ? env_1.JWT_ADMIN_SECRET : '');
+            const { userId } = decodedToken;
+            req.body.userId = userId;
+            next();
+        }
+        catch (err) {
+            (0, throwError_1.throwError)('Could not authenticate; request failed.', 401);
+        }
     }
-    catch (_) {
-        const error = new Error();
-        error.message = 'Could not authenticate; request failed.';
-        error.statusCode = 401;
+    catch (error) {
         next(error);
     }
 };

@@ -33,24 +33,27 @@ const uuid_1 = require("uuid");
 const jwt = __importStar(require("jsonwebtoken"));
 const env_1 = require("../utils/env");
 const bcrypt = __importStar(require("bcryptjs"));
+const throwError_1 = require("../utils/throwError");
+const mongoose_1 = require("mongoose");
 const authenticate = async (req, res, next) => {
     try {
-        const project = await project_1.default.findById(req.body.appId);
-        if (!project) {
-            const err = new Error();
-            err.message = 'Project query unsuccessful; appId returned no results.';
-            err.statusCode = 404;
-            throw err;
+        const decodedToken = jwt.verify(req.body.appId, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
+        if (!decodedToken) {
+            (0, throwError_1.throwError)('Could not authenticate; request failed.', 401);
         }
-        if (req.body.appSecret !== project.secret) {
-            const err = new Error();
-            err.message = 'Authentication unsuccessful; wrong credentials.';
-            err.statusCode = 401;
-            throw err;
+        const { appId } = decodedToken;
+        const project = await project_1.default.findById(new mongoose_1.Types.ObjectId(appId));
+        if (!project) {
+            (0, throwError_1.throwError)('Project query unsuccessful; appId returned no results.', 404);
+        }
+        else {
+            if (appId !== project._id.toString()) {
+                (0, throwError_1.throwError)('Authentication unsuccessful; wrong credentials.', 401);
+            }
         }
         const sessionId = (0, uuid_1.v4)();
         const token = jwt.sign({
-            appId: req.body.appId,
+            appId,
             sessionId
         }, env_1.JWT_SECRET !== null && env_1.JWT_SECRET !== void 0 ? env_1.JWT_SECRET : '');
         res.status(200).json({
@@ -67,17 +70,11 @@ const login = async (req, res, next) => {
     try {
         const user = await user_1.default.findOne({ name: req.body.name });
         if (!user) {
-            const err = new Error();
-            err.message = 'User not found.';
-            err.statusCode = 404;
-            throw err;
+            return (0, throwError_1.throwError)('Project query unsuccessful; appId returned no results.', 404);
         }
         const passwordOk = await bcrypt.compare(req.body.password, user.password);
         if (!passwordOk) {
-            const err = new Error();
-            err.message = 'Authentication unsuccessful; wrong credentials.';
-            err.statusCode = 401;
-            throw err;
+            (0, throwError_1.throwError)('Authentication unsuccessful; wrong credentials.', 401);
         }
         const token = jwt.sign({
             userId: user._id

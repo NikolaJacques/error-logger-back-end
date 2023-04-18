@@ -4,7 +4,7 @@ import {permissions} from './permissions';
 import * as jwt from 'jsonwebtoken';
 import {setup, cleanup} from '../utils/mockDB.spec';
 import User from '../models/user';
-import { ErrorResponseType } from '../utils/sharedTypes';
+import { ErrorResponseType } from 'delivery-backend';
 
 jest.mock('jsonwebtoken');
 
